@@ -81,7 +81,7 @@ const createOrderIntoDB = async (payload: TOrder) => {
 
     const isOrderExists = await OrderModel.findOne({
       listingId: payload.listingId,
-      tenantId: payload.tenantId,
+      tenantId: payload.buyerId,
     });
 
     if (isOrderExists) {
@@ -97,7 +97,7 @@ const createOrderIntoDB = async (payload: TOrder) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create order');
     }
 
-    const user = await UserModel.findOne({ userId: payload.landlordId });
+    const user = await UserModel.findOne({ userId: payload.sellerId });
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }
@@ -217,7 +217,7 @@ const changeOrderStatusIntoDB = async (
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
     }
 
-    const user = await UserModel.findOne({ userId: result?.tenantId });
+    const user = await UserModel.findOne({ userId: result?.buyerId });
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }
@@ -428,7 +428,7 @@ const verifyPaymentFromDB = async (paymentId: string) => {
       }
 
       const user = await UserModel.findOne({
-        userId: updatedOrder?.tenantId,
+        userId: updatedOrder?.buyerId,
       });
       if (!user) {
         throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
