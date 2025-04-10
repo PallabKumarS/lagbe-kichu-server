@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
-import bcrypt from "bcrypt";
-import config from "../../config";
-import { IUser, TUser } from "./user.interface";
+import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
+import config from '../../config';
+import { IUser, TUser } from './user.interface';
 
 const userSchema = new Schema<TUser, IUser>(
   {
@@ -15,8 +15,12 @@ const userSchema = new Schema<TUser, IUser>(
     email: { type: String, required: true, unique: true },
     role: {
       type: String,
-      enum: ["admin", "tenant", "landlord"],
+      enum: ['admin', 'buyer', 'seller'],
       required: true,
+    },
+    subRole: {
+      type: String,
+      enum: ['manager', 'accountant', 'inventory_staff'],
     },
     address: { type: String },
     passwordChangedAt: { type: Date },
@@ -30,25 +34,32 @@ const userSchema = new Schema<TUser, IUser>(
   },
 );
 
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   const user = this;
   // hashing password and save into DB
   user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds),
   );
+
+  // setting sub roles based on roles
+  if (this.role === 'seller' && !this.subRole) {
+    this.subRole = 'inventory_staff';
+  } else if (this.role !== 'seller') {
+    this.subRole = undefined;
+  }
   next();
 });
 
 // set '' after saving password
-userSchema.post("save", function (doc, next) {
-  doc.password = "";
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
   next();
 });
 
 // check user is exists or not
 userSchema.statics.isUserExists = async function (email: string) {
-  return await UserModel.findOne({ email }).select("+password");
+  return await UserModel.findOne({ email }).select('+password');
 };
 
 // check password is matched or not
@@ -69,6 +80,6 @@ userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   );
 };
 
-const UserModel = model<TUser, IUser>("User", userSchema);
+const UserModel = model<TUser, IUser>('User', userSchema);
 
 export default UserModel;

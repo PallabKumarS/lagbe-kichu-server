@@ -44,7 +44,7 @@ const getSingleListing = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// get personal listings controller (landlord)
+// get personal listings controller (seller)
 const getPersonalListings = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
 
@@ -102,6 +102,7 @@ const deleteListing = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get listing locations
 const getListingLocations = catchAsync(async (req: Request, res: Response) => {
   const result = await ListingService.getListingLocationsFromDB();
 
@@ -109,6 +110,21 @@ const getListingLocations = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Listing locations retrieved successfully',
+    data: result,
+  });
+});
+
+// update listing discount
+const updateListingDiscount = catchAsync(async (req: Request, res: Response) => {
+  const listingId = req.params.listingId;
+  const payload = req.body;
+
+  const result = await ListingService.updateListingDiscountIntoDB(listingId, payload);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Listing discount updated successfully',
     data: result,
   });
 });
@@ -122,4 +138,5 @@ export const ListingController = {
   deleteListing,
   createListing,
   getListingLocations,
+  updateListingDiscount,
 };

@@ -35,22 +35,22 @@ const sendEmail = async (email: string, html: string, subject: string) => {
   }
 };
 
-// Email for Request Status Change
-export const sendRequestStatusChangeEmail = async (
+// Email for Order Status Change
+export const sendOrderStatusChangeEmail = async (
   email: string,
-  requestId: string,
+  orderId: string,
   newStatus: string,
   listingId: string,
-  location: string,
+  title: string,
 ) => {
-  const subject = `Request Status Update - ${requestId}`;
+  const subject = `Order Status Update - ${orderId}`;
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2>Request Status Update</h2>
+      <h2>Order Status Update</h2>
       <p>Dear User,</p>
-      <p>Your request for the listing <strong>${listingId}, located at ${location}</strong> has been updated.</p>
+      <p>Your order for the listing <strong>${listingId}, ${title} has been updated.</p>
       <p>Current Status: <span style="color: blue;">${newStatus}</span></p>
-      <p>Request ID: ${requestId}</p>
+      <p>Order ID: ${orderId}</p>
       <p>If you have any questions, please contact our support team.</p>
       <p>Best regards,<br>NestHunt Team</p>
     </div>
@@ -62,20 +62,20 @@ export const sendRequestStatusChangeEmail = async (
 // Email for Payment Confirmation
 export const sendPaymentConfirmationEmail = async (
   email: string,
-  requestId: string,
+  orderId: string,
   paymentId: string,
-  listingTitle: string,
+  title: string,
   amount: number,
 ) => {
-  const subject = `Payment Confirmation - ${requestId}`;
+  const subject = `Payment Confirmation - ${orderId}`;
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2>Payment Confirmation</h2>
       <p>Dear User,</p>
-      <p>Your payment for the listing <strong>${listingTitle}</strong> has been successfully processed.</p>
+      <p>Your payment for the listing <strong>${title}</strong> has been successfully processed.</p>
       <p>Payment Details:</p>
       <ul>
-        <li>Request ID: ${requestId}</li>
+        <li>Order ID: ${orderId}</li>
         <li>Payment ID: ${paymentId}</li>
         <li>Amount Paid: $${amount.toFixed(2)}</li>
       </ul>

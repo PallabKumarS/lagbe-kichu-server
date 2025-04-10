@@ -1,7 +1,8 @@
+import dayjs from 'dayjs';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { AppError } from '../../errors/AppError';
 import { generateListingId } from '../../utils/generateID';
-import RequestModel from '../request/request.model';
+import OrderModel from '../order/order.model';
 import { listingSearchableFields } from './listing.constant';
 import { TListing } from './listing.interface';
 import ListingModel from './listing.model';
@@ -55,7 +56,7 @@ const getSingleListingFromDB = async (listingId: string) => {
   return result;
 };
 
-// get personal listings from db (landlord)
+// get personal listings from db (seller)
 const getPersonalListingsFromDB = async (
   userId: string,
   query: Record<string, unknown>,
@@ -84,9 +85,9 @@ const updateListingStatusIntoDB = async (listingId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
   }
 
-  const request = await RequestModel.findOne({ listingId: listingId });
+  const order = await OrderModel.findOne({ listingId: listingId });
 
-  if (request?.status === 'paid' && !isListing.isAvailable) {
+  if (order?.status === 'paid' && !isListing.isAvailable) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Listing is already rented');
   }
 
@@ -100,6 +101,7 @@ const updateListingStatusIntoDB = async (listingId: string) => {
   return result;
 };
 
+// update listing in the db
 const updateListingIntoDB = async (
   listingId: string,
   payload: Partial<TListing>,
@@ -114,6 +116,7 @@ const updateListingIntoDB = async (
   return result;
 };
 
+// delete listing from the db
 const deleteListingFromDB = async (listingId: string) => {
   const isListing = await ListingModel.isListingExists(listingId);
   if (!isListing) {
@@ -145,6 +148,44 @@ const getListingLocationsFromDB = async () => {
   return result;
 };
 
+// update discount in the db
+const updateListingDiscountIntoDB = async (
+  listingId: string,
+  payload: Partial<TListing>,
+) => {
+  const isListing = await ListingModel.isListingExists(listingId);
+  if (!isListing) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
+  }
+
+  if (payload.discount && payload.discount > 100) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Discount cannot be greater than 100%',
+    );
+  }
+
+  if (payload.discount && payload.discount < 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Discount cannot be negative');
+  }
+
+  if (
+    payload.discountStartDate &&
+    payload.discountEndDate &&
+    dayjs(payload.discountStartDate).isAfter(dayjs(payload.discountEndDate))
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Discount end date cannot be before start date',
+    );
+  }
+
+  const result = await ListingModel.findOneAndUpdate({ listingId }, payload, {
+    new: true,
+  });
+  return result;
+};
+
 export const ListingService = {
   getAllListingsFromDB,
   createListingIntoDB,
@@ -154,4 +195,5 @@ export const ListingService = {
   updateListingIntoDB,
   deleteListingFromDB,
   getListingLocationsFromDB,
+  updateListingDiscountIntoDB,
 };

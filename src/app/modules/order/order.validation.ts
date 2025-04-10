@@ -1,15 +1,15 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const createRequestValidation = z.object({
   body: z.object({
     tenantId: z.string({
-      required_error: "Tenant is required",
+      required_error: 'Buyer is required',
     }),
     listingId: z.string({
-      required_error: "Listing is required",
+      required_error: 'Listing is required',
     }),
     landlordId: z.string({
-      required_error: "Landlord is required",
+      required_error: 'Seller is required',
     }),
   }),
 });

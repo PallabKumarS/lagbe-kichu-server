@@ -5,7 +5,7 @@ Lagbe Kichu is a rental property management system built using Node.js, Express,
 ## Features
 
 - User Authentication & Authorization (JWT, bcrypt)
-- Role-based Access Control (Admin, Tenant, Landlord)
+- Role-based Access Control (Admin, Buyer, Seller)
 - Property Listings & Requests Management
 - Secure Payments via Surjopay
 - Email Notifications using Nodemailer
@@ -92,26 +92,26 @@ POST /api/auth/refresh-token - Refresh access token
 ```
 GET /api/listings - Get all listings
 GET /api/listings/locations - Get listing locations
-GET /api/listings/personal - (Landlord) Get personal listings
+GET /api/listings/personal - (Seller) Get personal listings
 GET /api/listings/:listingId - Get a single listing
-POST /api/listings - (Landlord) Create a new listing
-PATCH /api/listings/:listingId - (Landlord/Admin) Update a listing
-PATCH /api/listings/status/:listingId - (Landlord/Admin) Update listing status
-DELETE /api/listings/:listingId - (Landlord/Admin) Delete a listing
+POST /api/listings - (Seller) Create a new listing
+PATCH /api/listings/:listingId - (Seller/Admin) Update a listing
+PATCH /api/listings/status/:listingId - (Seller/Admin) Update listing status
+DELETE /api/listings/:listingId - (Seller/Admin) Delete a listing
 ```
 
 ### Requests
 
 ```
 GET /api/requests - (Admin) Get all requests
-GET /api/requests/personal - (Tenant/Landlord) Get personal requests
-GET /api/requests/:requestId - Get a single request
-POST /api/requests - (Tenant) Create a request
-PATCH /api/requests/status/:requestId - (Landlord) Change request status
-PATCH /api/requests/:requestId - (Landlord/Admin) Update request
-PATCH /api/requests/create-payment/:requestId - (Tenant) Initiate payment
-PATCH /api/requests/verify-payment/:paymentId - (Tenant) Verify payment
-DELETE /api/requests/:requestId - (Admin/Tenant) Delete request
+GET /api/requests/personal - (Buyer/Seller) Get personal requests
+GET /api/requests/:requestId - Get a single order
+POST /api/requests - (Buyer) Create a order
+PATCH /api/requests/status/:requestId - (Seller) Change order status
+PATCH /api/requests/:requestId - (Seller/Admin) Update order
+PATCH /api/requests/create-payment/:requestId - (Buyer) Initiate payment
+PATCH /api/requests/verify-payment/:paymentId - (Buyer) Verify payment
+DELETE /api/requests/:requestId - (Admin/Buyer) Delete order
 ```
 
 ## Live Server

@@ -3,15 +3,18 @@ import { IListing, TListing } from './listing.interface';
 
 const listingSchema = new Schema<TListing, IListing>(
   {
-    houseLocation: { type: String, required: true },
+    title: { type: String, required: true },
+    category: { type: String, required: true },
     description: { type: String, required: true },
-    rentPrice: { type: Number, required: true },
-    bedroomNumber: { type: Number, required: true },
+    price: { type: Number, required: true },
     images: { type: [String], required: true },
-    landlordId: { type: String, ref: 'User' },
+    sellerId: { type: String, ref: 'User' },
+    discount: { type: Number, default: 0 },
+    discountStartDate: { type: Date },
+    discountEndDate: { type: Date },
+    isDiscountActive: { type: Boolean, default: false },
     isAvailable: { type: Boolean, default: true },
     listingId: { type: String, unique: true },
-    features: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
   {

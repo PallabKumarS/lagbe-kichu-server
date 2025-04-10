@@ -1,5 +1,6 @@
 import ListingModel from '../modules/listing/listing.model';
-import RequestModel from '../modules/request/request.model';
+import OrderModel from '../modules/order/order.model';
+
 import UserModel from '../modules/user/user.model';
 
 // user id
@@ -25,10 +26,10 @@ export const generateUserId = async (userRole: string) => {
 
   if (userRole === 'admin') {
     incrementId = `A-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
-  } else if (userRole === 'landlord') {
-    incrementId = `L-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
-  } else if (userRole === 'tenant') {
-    incrementId = `T-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
+  } else if (userRole === 'seller') {
+    incrementId = `S-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
+  } else if (userRole === 'buyer') {
+    incrementId = `B-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
   }
 
   return incrementId;
@@ -55,23 +56,23 @@ export const generateListingId = async () => {
   return incrementId;
 };
 
-// request id
-export const generateRequestId = async () => {
-  const findLasRequestId = async () => {
-    const lastRequest = await RequestModel.findOne({}, { requestId: 1, _id: 0 })
+// order id
+export const generateOrderId = async () => {
+  const findLasOrderId = async () => {
+    const lastOrder = await OrderModel.findOne({}, { orderId: 1, _id: 0 })
       .sort({ createdAt: -1 })
       .lean();
-    return lastRequest?.requestId ? lastRequest.requestId : undefined;
+    return lastOrder?.orderId ? lastOrder.orderId : undefined;
   };
 
   let currentId = '0';
-  const lastRequestId = await findLasRequestId();
+  const lastOrderId = await findLasOrderId();
 
-  if (lastRequestId) {
-    currentId = lastRequestId.split('-')[1];
+  if (lastOrderId) {
+    currentId = lastOrderId.split('-')[1];
   }
 
-  let incrementId = `R-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
+  let incrementId = `O-${(Number(currentId) + 1).toString().padStart(5, '0')}`;
 
   return incrementId;
 };

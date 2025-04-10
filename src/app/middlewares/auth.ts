@@ -1,20 +1,25 @@
-import { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status";
-import config from "../config";
-import { TUserRole } from "../modules/user/user.interface";
-import catchAsync from "../utils/catchAsync";
-import { AppError } from "../errors/AppError";
-import { JwtPayload } from "jsonwebtoken";
-import { verifyToken } from "../modules/auth/auth.utils";
-import UserModel from "../modules/user/user.model";
+import { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
+import config from '../config';
+import { TUserRole, TUserSubRole } from '../modules/user/user.interface';
+import catchAsync from '../utils/catchAsync';
+import { AppError } from '../errors/AppError';
+import { JwtPayload } from 'jsonwebtoken';
+import { verifyToken } from '../modules/auth/auth.utils';
+import UserModel from '../modules/user/user.model';
 
-const auth = (...requiredRoles: TUserRole[]) => {
+const auth = (
+  ...requiredRoles: (
+    | TUserRole
+    | { role: TUserRole; subRoles?: TUserSubRole[] }
+  )[]
+) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
 
     // checking if the token is missing
     if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
     }
 
     // checking if the given token is valid
@@ -25,18 +30,18 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const user = await UserModel.isUserExists(email);
 
     if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, "This user is not found !");
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
     }
     // checking if the user is active
     if (!user.isActive) {
-      throw new AppError(httpStatus.FORBIDDEN, "Your account is deactivated !");
+      throw new AppError(httpStatus.FORBIDDEN, 'Your account is deactivated !');
     }
 
     // checking if the user is already deleted
     const isDeleted = user?.isDeleted;
 
     if (isDeleted) {
-      throw new AppError(httpStatus.FORBIDDEN, "This user is deleted !");
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
     }
 
     // checking if the password is changed after the jwt was issued
@@ -47,11 +52,28 @@ const auth = (...requiredRoles: TUserRole[]) => {
         iat as number,
       )
     ) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized !");
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
     }
 
-    if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized !");
+    // if (requiredRoles && !requiredRoles.includes(role)) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
+    // }
+
+    const matched = requiredRoles.some((item) => {
+      if (typeof item === 'string') {
+        return item === role;
+      }
+      if (typeof item === 'object') {
+        return (
+          item.role === role &&
+          (role !== 'seller' ||
+            (user?.subRole && item.subRoles?.includes(user?.subRole)))
+        );
+      }
+    });
+
+    if (!matched) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
     }
 
     req.user = decoded as JwtPayload;

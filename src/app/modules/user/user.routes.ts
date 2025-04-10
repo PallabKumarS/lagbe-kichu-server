@@ -7,17 +7,17 @@ import { USER_ROLE } from './user.constants';
 
 const router = Router();
 
-router.get('/', auth(USER_ROLE.admin), UserController.getAllUsers);
-
 router.post(
   '/create-user',
   validateRequest(UserValidation.createUserValidationSchema),
   UserController.createUser,
 );
 
+router.get('/', auth(USER_ROLE.admin), UserController.getAllUsers);
+
 router.get(
   '/me',
-  auth(USER_ROLE.tenant, USER_ROLE.admin, USER_ROLE.landlord),
+  auth(USER_ROLE.buyer, USER_ROLE.admin, USER_ROLE.seller),
   UserController.getMe,
 );
 
@@ -36,7 +36,7 @@ router.patch(
 
 router.patch(
   '/:userId',
-  auth(USER_ROLE.admin, USER_ROLE.tenant, USER_ROLE.landlord),
+  auth(USER_ROLE.admin, USER_ROLE.buyer, USER_ROLE.seller),
   validateRequest(UserValidation.updateUserValidationSchema),
   UserController.updateUser,
 );

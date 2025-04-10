@@ -100,7 +100,11 @@ const updateUserIntoDB = async (
 };
 
 // update user role into db
-const updateUserRoleIntoDB = async (userId: string, role: string) => {
+const updateUserRoleIntoDB = async (
+  userId: string,
+  role?: string,
+  subRole?: string,
+) => {
   const isUserExist = await UserModel.findOne({ userId });
   if (!isUserExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'User does not exist');
@@ -111,6 +115,24 @@ const updateUserRoleIntoDB = async (userId: string, role: string) => {
       httpStatus.BAD_REQUEST,
       'This user is an admin. You cannot change his role.',
     );
+  }
+
+  const newRole = role || isUserExist.role;
+
+  const updateData: Partial<{ role: string; subRole?: string }> = {};
+
+  // Only update role if provided
+  if (role) updateData.role = role;
+
+  // Update subRole if provided and newRole is 'seller'
+  if (newRole === 'seller') {
+    if (subRole) {
+      updateData.subRole = subRole;
+    } else if (!isUserExist.subRole) {
+      updateData.subRole = 'inventory staff';
+    }
+  } else {
+    updateData.subRole = undefined;
   }
 
   const result = await UserModel.findOneAndUpdate(

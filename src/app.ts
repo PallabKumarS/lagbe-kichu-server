@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import { UserRoutes } from './app/modules/user/user.routes';
 import { AuthRoutes } from './app/modules/auth/auth.routes';
 import { ListingRoutes } from './app/modules/listing/listing.routes';
-import { RequestRoutes } from './app/modules/request/request.routes';
+import { OrderRoutes } from './app/modules/order/order.routes';
 
 const app: Application = express();
 
@@ -30,7 +30,7 @@ app.use(express.json());
 app.use('/api/users', UserRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/api/listings', ListingRoutes);
-app.use('/api/requests', RequestRoutes);
+app.use('/api/requests', OrderRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`

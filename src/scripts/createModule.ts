@@ -41,12 +41,12 @@ router.get("/", ${capitalize(moduleName)}Controller.getAll${capitalize(moduleNam
 
 export const ${capitalize(moduleName)}Routes = router;`;
       } else if (file.endsWith('.controller.ts')) {
-        content = `import { Request, Response } from "express";
+        content = `import { Order, Response } from "express";
 import { ${capitalize(moduleName)}Service } from "./${moduleName}.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
-const getAll${capitalize(moduleName)} = catchAsync(async (req: Request, res: Response) => {
+const getAll${capitalize(moduleName)} = catchAsync(async (req: Order, res: Response) => {
   const data = await ${capitalize(moduleName)}Service.getAll${capitalize(moduleName)}FromDB();
   sendResponse(res, {
     statusCode: 200,

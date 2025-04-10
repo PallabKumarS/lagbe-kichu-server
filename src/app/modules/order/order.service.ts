@@ -1,17 +1,17 @@
 import QueryBuilder from '../../builder/QueryBuilder';
-import RequestModel from './request.model';
-import { TRequest } from './request.interface';
-import { generateRequestId } from '../../utils/generateID';
-import { makePaymentAsync, verifyPaymentAsync } from './request.utils';
+import OrderModel from './order.model';
+import { TOrder } from './order.interface';
+import { generateOrderId } from '../../utils/generateID';
 import { AppError } from '../../errors/AppError';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import ListingModel from '../listing/listing.model';
 import {
   sendPaymentConfirmationEmail,
-  sendRequestStatusChangeEmail,
+  sendOrderStatusChangeEmail,
 } from '../../utils/sendMail';
 import UserModel from '../user/user.model';
+import { makePaymentAsync, verifyPaymentAsync } from './order.utils';
 
 interface PopulatedListing {
   rentPrice: number;
@@ -29,21 +29,21 @@ interface PopulatedLandlord {
   userId: string;
 }
 
-type PopulatedRequest = {
+type PopulatedOrder = {
   listingId: PopulatedListing;
   tenantId: PopulatedTenant;
   landlordId: PopulatedLandlord;
-  requestId: string;
+  orderId: string;
   status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
   message?: string;
   moveInDate: Date;
   rentDuration: string;
   transaction?: Record<string, any>;
 };
-// get all requests from db (admin)
-const getAllRequestFromDB = async (query: Record<string, unknown>) => {
-  const requestQuery = new QueryBuilder(
-    RequestModel.find({})
+// get all orders from db (admin)
+const getAllOrderFromDB = async (query: Record<string, unknown>) => {
+  const orderQuery = new QueryBuilder(
+    OrderModel.find({})
       .populate({
         path: 'listingId',
         localField: 'listingId',
@@ -65,36 +65,36 @@ const getAllRequestFromDB = async (query: Record<string, unknown>) => {
     .sort()
     .paginate();
 
-  const data = await requestQuery.modelQuery;
-  const meta = await requestQuery.countTotal();
+  const data = await orderQuery.modelQuery;
+  const meta = await orderQuery.countTotal();
 
   return { data, meta };
 };
 
-// create request in the db (tenant)
-const createRequestIntoDB = async (payload: TRequest) => {
+// create order in the db (buyer)
+const createOrderIntoDB = async (payload: TOrder) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    payload.requestId = await generateRequestId();
+    payload.orderId = await generateOrderId();
 
-    const isRequestExists = await RequestModel.findOne({
+    const isOrderExists = await OrderModel.findOne({
       listingId: payload.listingId,
       tenantId: payload.tenantId,
     });
 
-    if (isRequestExists) {
+    if (isOrderExists) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         'You have already applied for this listing',
       );
     }
 
-    const result = await RequestModel.create([payload], { session });
+    const result = await OrderModel.create([payload], { session });
 
     if (result?.length === 0) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create request');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create order');
     }
 
     const user = await UserModel.findOne({ userId: payload.landlordId });
@@ -109,12 +109,12 @@ const createRequestIntoDB = async (payload: TRequest) => {
       throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
     }
 
-    const info = await sendRequestStatusChangeEmail(
+    const info = await sendOrderStatusChangeEmail(
       user?.email,
-      payload?.requestId as string,
+      payload?.orderId as string,
       payload?.status,
       payload?.listingId,
-      listing?.houseLocation,
+      listing?.title,
     );
     if (info.accepted.length === 0) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
@@ -130,13 +130,13 @@ const createRequestIntoDB = async (payload: TRequest) => {
   }
 };
 
-// get personal requests from db (tenant & landlord)
-const getPersonalRequestFromDB = async (
+// get personal orders from db (buyer & seller)
+const getPersonalOrderFromDB = async (
   userId: string,
   query: Record<string, unknown>,
 ) => {
-  const requestQuery = new QueryBuilder(
-    RequestModel.find({
+  const orderQuery = new QueryBuilder(
+    OrderModel.find({
       $or: [{ tenantId: userId }, { landlordId: userId }],
     })
       .populate({
@@ -157,15 +157,15 @@ const getPersonalRequestFromDB = async (
     query,
   );
 
-  const data = await requestQuery.modelQuery;
-  const meta = await requestQuery.countTotal();
+  const data = await orderQuery.modelQuery;
+  const meta = await orderQuery.countTotal();
 
   return { data, meta };
 };
 
-// get single request from db (admin)
-const getSingleRequestFromDB = async (requestId: string) => {
-  const result = await RequestModel.findOne({ requestId })
+// get single order from db (admin)
+const getSingleOrderFromDB = async (orderId: string) => {
+  const result = await OrderModel.findOne({ orderId })
     .populate({
       path: 'listingId',
       localField: 'listingId',
@@ -185,27 +185,27 @@ const getSingleRequestFromDB = async (requestId: string) => {
   return result;
 };
 
-// change request status from db (landlord)
-const changeRequestStatusIntoDB = async (
-  requestId: string,
+// change order status from db (seller)
+const changeOrderStatusIntoDB = async (
+  orderId: string,
   status: { status: string },
 ) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const isRequestExists = await RequestModel.findOne({ requestId });
+    const isOrderExists = await OrderModel.findOne({ orderId });
 
-    if (!isRequestExists) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Request not found');
+    if (!isOrderExists) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
     }
 
-    if (isRequestExists.status === 'paid') {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Request already paid');
+    if (isOrderExists.status === 'paid') {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Order already paid');
     }
 
-    const result = await RequestModel.findOneAndUpdate(
-      { requestId },
+    const result = await OrderModel.findOneAndUpdate(
+      { orderId },
       { status: status.status },
       {
         new: true,
@@ -214,7 +214,7 @@ const changeRequestStatusIntoDB = async (
     );
 
     if (!result) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update request');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
     }
 
     const user = await UserModel.findOne({ userId: result?.tenantId });
@@ -229,12 +229,12 @@ const changeRequestStatusIntoDB = async (
       throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
     }
 
-    const info = await sendRequestStatusChangeEmail(
+    const info = await sendOrderStatusChangeEmail(
       user?.email,
-      result?.requestId as string,
+      result?.orderId as string,
       result?.status,
       result?.listingId,
-      listing?.houseLocation,
+      listing?.title,
     );
     if (info.accepted.length === 0) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
@@ -250,22 +250,19 @@ const changeRequestStatusIntoDB = async (
   }
 };
 
-// update request from db
-const updateRequestIntoDB = async (
-  requestId: string,
-  payload: Partial<TRequest>,
-) => {
+// update order from db
+const updateOrderIntoDB = async (orderId: string, payload: Partial<TOrder>) => {
   try {
-    const isRequestExists = await RequestModel.findOne({ requestId });
+    const isOrderExists = await OrderModel.findOne({ orderId });
 
-    if (!isRequestExists) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Request not found');
+    if (!isOrderExists) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
     }
-    const result = await RequestModel.findOneAndUpdate({ requestId }, payload, {
+    const result = await OrderModel.findOneAndUpdate({ orderId }, payload, {
       new: true,
     });
     if (!result) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update request');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
     }
     return result;
   } catch (err: any) {
@@ -273,26 +270,26 @@ const updateRequestIntoDB = async (
   }
 };
 
-// delete request from db (admin)
-const deleteRequestFromDB = async (requestId: string) => {
-  const isRequestExists = await RequestModel.findOne({ requestId });
+// delete order from db (admin)
+const deleteOrderFromDB = async (orderId: string) => {
+  const isOrderExists = await OrderModel.findOne({ orderId });
 
-  if (!isRequestExists) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Request not found');
+  if (!isOrderExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
   }
 
-  if (isRequestExists.status === 'paid') {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Request already paid');
+  if (isOrderExists.status === 'paid') {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Order already paid');
   }
 
-  const result = await RequestModel.findOneAndDelete({ requestId });
+  const result = await OrderModel.findOneAndDelete({ orderId });
   return result;
 };
 
-// create payment in the db (tenant)
-const createPaymentIntoDB = async (requestId: string, client_ip: string) => {
+// create payment in the db (buyer)
+const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
   try {
-    const requestData = (await RequestModel.findOne({ requestId })
+    const orderData = (await OrderModel.findOne({ orderId })
       .populate({
         path: 'listingId',
         localField: 'listingId',
@@ -309,17 +306,17 @@ const createPaymentIntoDB = async (requestId: string, client_ip: string) => {
         foreignField: 'userId',
       })
       .lean()
-      .exec()) as unknown as PopulatedRequest;
+      .exec()) as unknown as PopulatedOrder;
 
     const shurjopayPayload = {
-      amount: requestData?.listingId.rentPrice,
-      order_id: requestId,
+      amount: orderData?.listingId.rentPrice,
+      order_id: orderId,
       currency: 'BDT',
-      customer_name: requestData?.tenantId.name,
-      customer_address: requestData?.tenantId?.address || 'N/A',
-      customer_email: requestData?.tenantId.email,
-      customer_phone: requestData?.tenantId?.phone || 'N/A',
-      customer_city: requestData?.listingId.houseLocation || 'N/A',
+      customer_name: orderData?.tenantId.name,
+      customer_address: orderData?.tenantId?.address || 'N/A',
+      customer_email: orderData?.tenantId.email,
+      customer_phone: orderData?.tenantId?.phone || 'N/A',
+      customer_city: orderData?.listingId.houseLocation || 'N/A',
       client_ip,
     };
 
@@ -329,11 +326,11 @@ const createPaymentIntoDB = async (requestId: string, client_ip: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create payment');
     }
 
-    let updatedRequest: TRequest | null = null;
+    let updatedOrder: TOrder | null = null;
 
     if (payment?.transactionStatus) {
-      updatedRequest = await RequestModel.findOneAndUpdate(
-        { requestId },
+      updatedOrder = await OrderModel.findOneAndUpdate(
+        { orderId },
         {
           $set: {
             transaction: {
@@ -347,22 +344,22 @@ const createPaymentIntoDB = async (requestId: string, client_ip: string) => {
       );
     }
 
-    if (!updatedRequest) {
+    if (!updatedOrder) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
     }
 
-    return updatedRequest;
+    return updatedOrder;
   } catch (err: any) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create payment');
   }
 };
 
-// verify payment from db (tenant)
+// verify payment from db (buyer)
 const verifyPaymentFromDB = async (paymentId: string) => {
   const payment = await verifyPaymentAsync(paymentId);
 
   if (payment.length) {
-    const updated = await RequestModel.findOneAndUpdate(
+    const updated = await OrderModel.findOneAndUpdate(
       {
         'transaction.paymentId': String(paymentId),
       },
@@ -396,11 +393,11 @@ const verifyPaymentFromDB = async (paymentId: string) => {
 
     try {
       // check if order was placed before
-      const requestExists = await RequestModel.findOne({
+      const orderExists = await OrderModel.findOne({
         'transaction.paymentId': paymentId,
       });
 
-      if (!requestExists) {
+      if (!orderExists) {
         throw new AppError(
           httpStatus.NOT_FOUND,
           'Payment was not done correctly, please try again',
@@ -408,19 +405,19 @@ const verifyPaymentFromDB = async (paymentId: string) => {
       }
 
       // update  (first transaction)
-      const updatedRequest = await RequestModel.findOneAndUpdate(
-        { requestId: requestExists?.requestId },
+      const updatedOrder = await OrderModel.findOneAndUpdate(
+        { orderId: orderExists?.orderId },
         { status: 'paid' },
         { new: true, session },
       );
 
-      if (!updatedRequest) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update request');
+      if (!updatedOrder) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
       }
 
       // update order (second transaction)
       const updatedListing = await ListingModel.findOneAndUpdate(
-        { listingId: requestExists?.listingId },
+        { listingId: orderExists?.listingId },
         {
           isAvailable: false,
         },
@@ -431,7 +428,7 @@ const verifyPaymentFromDB = async (paymentId: string) => {
       }
 
       const user = await UserModel.findOne({
-        userId: updatedRequest?.tenantId,
+        userId: updatedOrder?.tenantId,
       });
       if (!user) {
         throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
@@ -439,10 +436,10 @@ const verifyPaymentFromDB = async (paymentId: string) => {
 
       const info = await sendPaymentConfirmationEmail(
         user?.email,
-        updatedRequest?.requestId as string,
-        updatedRequest?.transaction?.paymentId as string,
+        updatedOrder?.orderId as string,
+        updatedOrder?.transaction?.paymentId as string,
         updatedListing?.listingId as string,
-        updatedListing?.rentPrice,
+        updatedListing?.price,
       );
 
       if (info.accepted.length === 0) {
@@ -463,14 +460,14 @@ const verifyPaymentFromDB = async (paymentId: string) => {
   return payment[0];
 };
 
-export const RequestService = {
-  getAllRequestFromDB,
-  getPersonalRequestFromDB,
-  getSingleRequestFromDB,
-  deleteRequestFromDB,
-  createRequestIntoDB,
-  changeRequestStatusIntoDB,
+export const OrderService = {
+  getAllOrderFromDB,
+  getPersonalOrderFromDB,
+  getSingleOrderFromDB,
+  deleteOrderFromDB,
+  createOrderIntoDB,
+  changeOrderStatusIntoDB,
   createPaymentIntoDB,
   verifyPaymentFromDB,
-  updateRequestIntoDB,
+  updateOrderIntoDB,
 };

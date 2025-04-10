@@ -1,15 +1,18 @@
 import { Model } from 'mongoose';
 
 export type TListing = {
-  houseLocation: string;
+  title: string;
+  category: string;
   description: string;
-  rentPrice: number;
-  bedroomNumber: number;
+  price: number;
   images: string[];
-  landlordId: string;
+  sellerId: string;
+  discount?: number;
+  discountStartDate?: Date;
+  discountEndDate?: Date;
+  isDiscountActive?: boolean;
   isAvailable?: boolean;
   listingId?: string;
-  features?: string;
   isDeleted?: boolean;
 };
 

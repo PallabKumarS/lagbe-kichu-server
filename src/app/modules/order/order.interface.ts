@@ -1,10 +1,10 @@
 import { Model } from 'mongoose';
 
-export type TRequest = {
+export type TOrder = {
   tenantId: string;
   listingId: string;
   landlordId: string;
-  requestId?: string;
+  orderId?: string;
   status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
   message?: string;
   moveInDate: Date;
@@ -22,6 +22,6 @@ export type TRequest = {
   };
 };
 
-export interface IRequest extends Model<TRequest> {
-  isRequestExists(id: string): Promise<TRequest | null>;
+export interface IOrder extends Model<TOrder> {
+  isOrderExists(id: string): Promise<TOrder | null>;
 }

@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
-import { IRequest, TRequest } from './request.interface';
+import { IOrder, TOrder } from './order.interface';
 
-const requestSchema = new Schema<TRequest, IRequest>(
+const orderSchema = new Schema<TOrder, IOrder>(
   {
     message: { type: String },
     status: {
@@ -14,7 +14,7 @@ const requestSchema = new Schema<TRequest, IRequest>(
     tenantId: { type: String, ref: 'User' },
     listingId: { type: String, ref: 'Listing' },
     landlordId: { type: String, ref: 'User' },
-    requestId: { type: String, unique: true },
+    orderId: { type: String, unique: true },
     landlordPhoneNumber: { type: String },
     transaction: {
       paymentId: { type: String },
@@ -32,10 +32,10 @@ const requestSchema = new Schema<TRequest, IRequest>(
   },
 );
 
-requestSchema.statics.isRequestExists = async function (id: string) {
-  return await RequestModel.findOne({ id });
+orderSchema.statics.isOrderExists = async function (id: string) {
+  return await OrderModel.findOne({ id });
 };
 
-const RequestModel = model<TRequest, IRequest>('Request', requestSchema);
+const OrderModel = model<TOrder, IOrder>('Order', orderSchema);
 
-export default RequestModel;
+export default OrderModel;
