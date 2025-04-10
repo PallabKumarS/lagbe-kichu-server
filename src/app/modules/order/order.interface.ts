@@ -1,15 +1,13 @@
 import { Model } from 'mongoose';
 
 export type TOrder = {
-  tenantId: string;
+  buyerId: string;
   listingId: string;
-  landlordId: string;
+  sellerId: string;
   orderId?: string;
   status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
   message?: string;
-  moveInDate: Date;
-  rentDuration: string;
-  landlordPhoneNumber?: string;
+  sellerPhoneNumber?: string;
   transaction?: {
     paymentId?: string;
     transactionStatus?: string;
