@@ -1,8 +1,8 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type TListing = {
   title: string;
-  category: string;
+  category: Types.ObjectId[];
   description: string;
   price: number;
   images: string[];

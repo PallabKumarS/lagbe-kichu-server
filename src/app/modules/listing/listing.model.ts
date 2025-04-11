@@ -4,7 +4,7 @@ import { IListing, TListing } from './listing.interface';
 const listingSchema = new Schema<TListing, IListing>(
   {
     title: { type: String, required: true },
-    category: { type: String, required: true },
+    category: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     description: { type: String, required: true },
     price: { type: Number, required: true },
     images: { type: [String], required: true },

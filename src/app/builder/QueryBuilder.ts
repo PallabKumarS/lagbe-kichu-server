@@ -15,7 +15,7 @@ class QueryBuilder<T> {
     if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
         $or: searchableFields.map((field) => {
-          if (field === 'rentPrice' || field === 'bedroomNumber') {
+          if (field === 'price') {
             const numericValue = Number(searchTerm);
             if (!isNaN(numericValue))
               return {
@@ -37,16 +37,25 @@ class QueryBuilder<T> {
   filter() {
     const queryObj = { ...this.query }; // copy
 
+    console.log(queryObj);
+
     // Filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    if (typeof queryObj.houseLocation === 'string') {
-      queryObj.houseLocation = {
-        $in: queryObj.houseLocation
+    if (typeof queryObj.category === 'string') {
+      queryObj.category = {
+        $in: queryObj.category
           .split(',')
-          .map((location) => new RegExp(location.trim(), 'i')), // Partial match, no ^ or $
+          .map((category) => new RegExp(category.trim(), 'i')), // Partial match, no ^ or $
+      };
+    }
+
+    if ('title' in queryObj) {
+      queryObj.title = {
+        $regex: queryObj.title,
+        $options: 'i',
       };
     }
 
@@ -65,13 +74,11 @@ class QueryBuilder<T> {
         priceFilter.$lte = Number(queryObj.maxPrice);
       }
 
-      (queryObj as any).rentPrice = priceFilter; // change the rentPrice as needed as that is the field name in the database
+      (queryObj as any).price = priceFilter; // change the rentPrice as needed as that is the field name in the database
 
       delete queryObj.minPrice;
       delete queryObj.maxPrice;
     }
-
-    console.log(queryObj);
 
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 

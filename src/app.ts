@@ -9,6 +9,8 @@ import { UserRoutes } from './app/modules/user/user.routes';
 import { AuthRoutes } from './app/modules/auth/auth.routes';
 import { ListingRoutes } from './app/modules/listing/listing.routes';
 import { OrderRoutes } from './app/modules/order/order.routes';
+import { ReviewRoutes } from './app/modules/review/review.routes';
+import { CategoryRoutes } from './app/modules/category/category.routes';
 
 const app: Application = express();
 
@@ -31,6 +33,8 @@ app.use('/api/users', UserRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/api/listings', ListingRoutes);
 app.use('/api/requests', OrderRoutes);
+app.use('/api/reviews', ReviewRoutes);
+app.use('/api/category', CategoryRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`

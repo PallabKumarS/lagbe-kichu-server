@@ -46,7 +46,7 @@ const getPersonalOrder = catchAsync(async (req: Request, res: Response) => {
 
 // get single order controller (admin)
 const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
-  const data = await OrderService.getSingleOrderFromDB(req.params.requestId);
+  const data = await OrderService.getSingleOrderFromDB(req.params.orderId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -59,7 +59,7 @@ const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
 // change status of order controller (seller)
 const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
   const data = await OrderService.changeOrderStatusIntoDB(
-    req.params.requestId,
+    req.params.orderId,
     req.body,
   );
 
@@ -74,7 +74,7 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
 // update order controller
 const updateOrder = catchAsync(async (req: Request, res: Response) => {
   const data = await OrderService.updateOrderIntoDB(
-    req.params.requestId,
+    req.params.orderId,
     req.body,
   );
 
@@ -88,7 +88,7 @@ const updateOrder = catchAsync(async (req: Request, res: Response) => {
 
 // delete requests controller (admin)
 const deleteOrder = catchAsync(async (req: Request, res: Response) => {
-  const data = await OrderService.deleteOrderFromDB(req.params.requestId);
+  const data = await OrderService.deleteOrderFromDB(req.params.orderId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -100,9 +100,9 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 
 // payment controller (buyer)
 const createPayment = catchAsync(async (req: Request, res: Response) => {
-  const requestId = req.params.requestId;
+  const orderId = req.params.orderId;
 
-  const data = await OrderService.createPaymentIntoDB(requestId, req.ip!);
+  const data = await OrderService.createPaymentIntoDB(orderId, req.ip!);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
