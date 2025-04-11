@@ -12,8 +12,8 @@ import httpStatus from 'http-status';
 const getAllListingsFromDB = async (query: Record<string, unknown>) => {
   const listingQuery = new QueryBuilder(
     ListingModel.find({}).populate({
-      path: 'landlordId',
-      localField: 'landlordId',
+      path: 'sellerId',
+      localField: 'sellerId',
       foreignField: 'userId',
     }),
     query,
@@ -49,8 +49,8 @@ const getSingleListingFromDB = async (listingId: string) => {
     listingId,
     isDeleted: false,
   }).populate({
-    path: 'landlordId',
-    localField: 'landlordId',
+    path: 'sellerId',
+    localField: 'sellerId',
     foreignField: 'userId',
   });
   return result;
@@ -63,8 +63,12 @@ const getPersonalListingsFromDB = async (
 ) => {
   const listingQuery = new QueryBuilder(
     ListingModel.find({
-      landlordId: userId,
+      sellerId: userId,
       isDeleted: false,
+    }).populate({
+      path: 'sellerId',
+      localField: 'sellerId',
+      foreignField: 'userId',
     }),
     query,
   )

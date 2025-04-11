@@ -9,7 +9,22 @@ import OrderModel from '../order/order.model';
 
 // get all reviews of a listing
 const getAllReviewFromDB = async (listingId: string) => {
-  const result = await ReviewModel.find({ listingId });
+  const result = await ReviewModel.find({ listingId })
+    .populate({
+      path: 'userId',
+      localField: 'userId',
+      foreignField: 'userId',
+    })
+    .populate({
+      path: 'listingId',
+      localField: 'listingId',
+      foreignField: 'listingId',
+    })
+    .populate({
+      path: 'orderId',
+      localField: 'orderId',
+      foreignField: 'orderId',
+    });
   return result;
 };
 

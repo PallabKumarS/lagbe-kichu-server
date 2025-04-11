@@ -31,8 +31,8 @@ interface PopulatedLandlord {
 
 type PopulatedOrder = {
   listingId: PopulatedListing;
-  tenantId: PopulatedTenant;
-  landlordId: PopulatedLandlord;
+  buyerId: PopulatedTenant;
+  sellerId: PopulatedLandlord;
   orderId: string;
   status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
   message?: string;
@@ -50,13 +50,13 @@ const getAllOrderFromDB = async (query: Record<string, unknown>) => {
         foreignField: 'listingId',
       })
       .populate({
-        path: 'tenantId',
-        localField: 'tenantId',
+        path: 'buyerId',
+        localField: 'buyerId',
         foreignField: 'userId',
       })
       .populate({
-        path: 'landlordId',
-        localField: 'landlordId',
+        path: 'sellerId',
+        localField: 'sellerId',
         foreignField: 'userId',
       }),
     query,
@@ -81,7 +81,7 @@ const createOrderIntoDB = async (payload: TOrder) => {
 
     const isOrderExists = await OrderModel.findOne({
       listingId: payload.listingId,
-      tenantId: payload.buyerId,
+      buyerId: payload.buyerId,
     });
 
     if (isOrderExists) {
@@ -137,7 +137,7 @@ const getPersonalOrderFromDB = async (
 ) => {
   const orderQuery = new QueryBuilder(
     OrderModel.find({
-      $or: [{ tenantId: userId }, { landlordId: userId }],
+      $or: [{ buyerId: userId }, { sellerId: userId }],
     })
       .populate({
         path: 'listingId',
@@ -145,13 +145,13 @@ const getPersonalOrderFromDB = async (
         foreignField: 'listingId',
       })
       .populate({
-        path: 'tenantId',
-        localField: 'tenantId',
+        path: 'buyerId',
+        localField: 'buyerId',
         foreignField: 'userId',
       })
       .populate({
-        path: 'landlordId',
-        localField: 'landlordId',
+        path: 'sellerId',
+        localField: 'sellerId',
         foreignField: 'userId',
       }),
     query,
@@ -172,13 +172,13 @@ const getSingleOrderFromDB = async (orderId: string) => {
       foreignField: 'listingId',
     })
     .populate({
-      path: 'tenantId',
-      localField: 'tenantId',
+      path: 'buyerId',
+      localField: 'buyerId',
       foreignField: 'userId',
     })
     .populate({
-      path: 'landlordId',
-      localField: 'landlordId',
+      path: 'sellerId',
+      localField: 'sellerId',
       foreignField: 'userId',
     });
 
@@ -296,13 +296,13 @@ const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
         foreignField: 'listingId',
       })
       .populate({
-        path: 'tenantId',
-        localField: 'tenantId',
+        path: 'buyerId',
+        localField: 'buyerId',
         foreignField: 'userId',
       })
       .populate({
-        path: 'landlordId',
-        localField: 'landlordId',
+        path: 'sellerId',
+        localField: 'sellerId',
         foreignField: 'userId',
       })
       .lean()
@@ -312,10 +312,10 @@ const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
       amount: orderData?.listingId.rentPrice,
       order_id: orderId,
       currency: 'BDT',
-      customer_name: orderData?.tenantId.name,
-      customer_address: orderData?.tenantId?.address || 'N/A',
-      customer_email: orderData?.tenantId.email,
-      customer_phone: orderData?.tenantId?.phone || 'N/A',
+      customer_name: orderData?.buyerId.name,
+      customer_address: orderData?.buyerId?.address || 'N/A',
+      customer_email: orderData?.buyerId.email,
+      customer_phone: orderData?.buyerId?.phone || 'N/A',
       customer_city: orderData?.listingId.houseLocation || 'N/A',
       client_ip,
     };
