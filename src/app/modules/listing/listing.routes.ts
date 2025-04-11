@@ -13,34 +13,47 @@ router.get('/:listingId', ListingController.getSingleListing);
 
 router.get(
   '/personal',
-  auth(USER_ROLE.seller),
+  auth({ role: USER_ROLE.seller, subRoles: ['manager', 'accountant'] }),
   ListingController.getPersonalListings,
 );
 
-router.post('/', auth(USER_ROLE.seller), ListingController.createListing);
+router.post(
+  '/',
+  auth({ role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] }),
+  ListingController.createListing,
+);
 
 router.patch(
   '/:listingId',
-  auth(USER_ROLE.seller, USER_ROLE.admin),
+  auth(
+    { role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] },
+    USER_ROLE.admin,
+  ),
   ListingController.updateListing,
 );
 
 router.patch(
   '/status/:listingId',
-  auth(USER_ROLE.seller, USER_ROLE.admin),
+  auth(
+    { role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] },
+    USER_ROLE.admin,
+  ),
   ListingController.updateListingStatus,
-);
-
-router.delete(
-  '/:listingId',
-  auth(USER_ROLE.seller, USER_ROLE.admin),
-  ListingController.deleteListing,
 );
 
 router.patch(
   '/discount/:listingId',
-  auth(USER_ROLE.seller, USER_ROLE.admin),
+  auth(
+    { role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] },
+    USER_ROLE.admin,
+  ),
   ListingController.updateListingDiscount,
+);
+
+router.delete(
+  '/:listingId',
+  auth({ role: USER_ROLE.seller, subRoles: ['manager'] }, USER_ROLE.admin),
+  ListingController.deleteListing,
 );
 
 export const ListingRoutes = router;
