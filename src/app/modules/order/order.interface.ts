@@ -5,7 +5,13 @@ export type TOrder = {
   listingId: string;
   sellerId: string;
   orderId?: string;
-  status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
+  status:
+    | 'pending'
+    | 'processing'
+    | 'out for delivery'
+    | 'paid'
+    | 'completed'
+    | 'cancelled';
   message?: string;
   sellerPhoneNumber?: string;
   transaction?: {
