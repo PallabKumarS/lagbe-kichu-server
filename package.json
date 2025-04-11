@@ -1,6 +1,6 @@
 {
   "keywords": [
-    "nestHunt"
+    "lagbeKichu"
   ],
   "author": "Pallab Kumar Sarker",
   "license": "ISC",
@@ -14,7 +14,7 @@
     "prettier:fix": "bun run prettier --write src",
     "create:module": "bun run src/scripts/createModule.ts"
   },
-  "name": "assignment-06-nest-hunt-server",
+  "name": "lagbe-kichu-server",
   "module": "src/server.ts",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

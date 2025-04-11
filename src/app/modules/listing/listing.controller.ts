@@ -98,7 +98,7 @@ const deleteListing = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Listing deleted successfully',
-    data: {},
+    data: null,
   });
 });
 
@@ -115,19 +115,24 @@ const getListingLocations = catchAsync(async (req: Request, res: Response) => {
 });
 
 // update listing discount
-const updateListingDiscount = catchAsync(async (req: Request, res: Response) => {
-  const listingId = req.params.listingId;
-  const payload = req.body;
+const updateListingDiscount = catchAsync(
+  async (req: Request, res: Response) => {
+    const listingId = req.params.listingId;
+    const payload = req.body;
 
-  const result = await ListingService.updateListingDiscountIntoDB(listingId, payload);
+    const result = await ListingService.updateListingDiscountIntoDB(
+      listingId,
+      payload,
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Listing discount updated successfully',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Listing discount updated successfully',
+      data: result,
+    });
+  },
+);
 
 export const ListingController = {
   getAllListings,
