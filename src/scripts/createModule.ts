@@ -30,6 +30,7 @@ const createModule = (moduleName: string): void => {
     if (!fs.existsSync(filePath)) {
       let content = '';
 
+      // route here
       if (file.endsWith('.routes.ts')) {
         content = `import { Router } from "express";
 import { ${capitalize(moduleName)}Controller } from "./${moduleName}.controller";
@@ -40,13 +41,15 @@ const router = Router();
 router.get("/", ${capitalize(moduleName)}Controller.getAll${capitalize(moduleName)});
 
 export const ${capitalize(moduleName)}Routes = router;`;
+
+        // controller here
       } else if (file.endsWith('.controller.ts')) {
-        content = `import { Order, Response } from "express";
+        content = `import { Request, Response } from "express";
 import { ${capitalize(moduleName)}Service } from "./${moduleName}.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
-const getAll${capitalize(moduleName)} = catchAsync(async (req: Order, res: Response) => {
+const getAll${capitalize(moduleName)} = catchAsync(async (req: Request, res: Response) => {
   const data = await ${capitalize(moduleName)}Service.getAll${capitalize(moduleName)}FromDB();
   sendResponse(res, {
     statusCode: 200,
@@ -57,6 +60,8 @@ const getAll${capitalize(moduleName)} = catchAsync(async (req: Order, res: Respo
 });
 
 export const ${capitalize(moduleName)}Controller = { getAll${capitalize(moduleName)} };`;
+
+        // service here
       } else if (file.endsWith('.service.ts')) {
         content = `import ${capitalize(moduleName)}Model from "./${moduleName}.model";
 
@@ -66,6 +71,8 @@ const getAll${capitalize(moduleName)}FromDB = async () => {
 };
 
 export const ${capitalize(moduleName)}Service = { getAll${capitalize(moduleName)}FromDB };`;
+
+        // interface here
       } else if (file.endsWith('.interface.ts')) {
         content = `import { Model } from "mongoose";
 
@@ -77,6 +84,8 @@ export type T${capitalize(moduleName)} = {
 export interface I${capitalize(moduleName)} extends Model<T${capitalize(moduleName)}> {
   is${capitalize(moduleName)}Exists(id: string): Promise<T${capitalize(moduleName)} | null>;
 }`;
+
+        // validation here
       } else if (file.endsWith('.validation.ts')) {
         content = `import { z } from "zod";
 
@@ -94,6 +103,8 @@ export const ${capitalize(moduleName)}Validation = {
   create${capitalize(moduleName)}Validation,
   update${capitalize(moduleName)}Validation,
 };`;
+
+        // model here
       } else if (file.endsWith('.model.ts')) {
         content = `import { Schema, model, Document } from "mongoose";
 import { T${capitalize(moduleName)},I${capitalize(moduleName)} } from "./${moduleName}.interface";
