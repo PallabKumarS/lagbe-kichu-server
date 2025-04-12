@@ -11,11 +11,13 @@ import httpStatus from 'http-status';
 // get all listings from db
 const getAllListingsFromDB = async (query: Record<string, unknown>) => {
   const listingQuery = new QueryBuilder(
-    ListingModel.find({}).populate({
-      path: 'sellerId',
-      localField: 'sellerId',
-      foreignField: 'userId',
-    }),
+    ListingModel.find({})
+      .populate({
+        path: 'sellerId',
+        localField: 'sellerId',
+        foreignField: 'userId',
+      })
+      .populate('category'),
     query,
   )
     .search(listingSearchableFields)
@@ -65,11 +67,13 @@ const getPersonalListingsFromDB = async (
     ListingModel.find({
       sellerId: userId,
       isDeleted: false,
-    }).populate({
-      path: 'sellerId',
-      localField: 'sellerId',
-      foreignField: 'userId',
-    }),
+    })
+      .populate({
+        path: 'sellerId',
+        localField: 'sellerId',
+        foreignField: 'userId',
+      })
+      .populate('category'),
     query,
   )
     .filter()

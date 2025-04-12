@@ -14,6 +14,13 @@ const loginUser = catchAsync(async (req, res) => {
     secure: config.node_env === 'production',
     httpOnly: true,
     sameSite: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
+
+  res.cookie('accessToken', accessToken, {
+    secure: config.node_env === 'production',
+    httpOnly: true,
+    sameSite: true,
     maxAge: 1000 * 60 * 60 * 24,
   });
 

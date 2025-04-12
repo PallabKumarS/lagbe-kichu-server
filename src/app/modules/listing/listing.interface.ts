@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose';
 
 export type TListing = {
   title: string;
-  category: Types.ObjectId[];
+  category: Types.ObjectId;
   description: string;
   price: number;
   images: string[];

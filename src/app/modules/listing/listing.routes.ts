@@ -7,29 +7,21 @@ const router = Router();
 
 router.get('/', ListingController.getAllListings);
 
-router.get('/locations', ListingController.getListingLocations);
-
-router.get('/:listingId', ListingController.getSingleListing);
-
 router.get(
   '/personal',
-  auth({ role: USER_ROLE.seller, subRoles: ['manager', 'accountant'] }),
+  auth({
+    role: USER_ROLE.seller,
+    subRoles: ['manager', 'accountant', 'inventory_staff'],
+  }),
   ListingController.getPersonalListings,
 );
+
+router.get('/:listingId', ListingController.getSingleListing);
 
 router.post(
   '/',
   auth({ role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] }),
   ListingController.createListing,
-);
-
-router.patch(
-  '/:listingId',
-  auth(
-    { role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] },
-    USER_ROLE.admin,
-  ),
-  ListingController.updateListing,
 );
 
 router.patch(
@@ -48,6 +40,15 @@ router.patch(
     USER_ROLE.admin,
   ),
   ListingController.updateListingDiscount,
+);
+
+router.patch(
+  '/:listingId',
+  auth(
+    { role: USER_ROLE.seller, subRoles: ['manager', 'inventory_staff'] },
+    USER_ROLE.admin,
+  ),
+  ListingController.updateListing,
 );
 
 router.delete(

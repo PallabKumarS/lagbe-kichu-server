@@ -34,7 +34,7 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/listings', ListingRoutes);
 app.use('/api/requests', OrderRoutes);
 app.use('/api/reviews', ReviewRoutes);
-app.use('/api/category', CategoryRoutes);
+app.use('/api/categories', CategoryRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`

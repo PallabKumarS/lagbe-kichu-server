@@ -11,7 +11,7 @@ const getAllCategoryFromDB = async (query: Record<string, unknown>) => {
     .sort();
 
   const data = await categoryQuery.modelQuery;
-  const meta = categoryQuery.countTotal();
+  const meta = await categoryQuery.countTotal();
 
   return { data, meta };
 };

@@ -7,12 +7,14 @@ import { Types } from 'mongoose';
 
 // get all category
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
-  const data = await CategoryService.getAllCategoryFromDB(req.query);
+  const { data, meta } = await CategoryService.getAllCategoryFromDB(req.query);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Categories retrieved successfully',
     data,
+    meta,
   });
 });
 
