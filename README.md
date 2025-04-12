@@ -103,15 +103,15 @@ DELETE /api/listings/:listingId - (Seller/Admin) Delete a listing
 ### Requests
 
 ```
-GET /api/requests - (Admin) Get all requests
-GET /api/requests/personal - (Buyer/Seller) Get personal requests
-GET /api/requests/:requestId - Get a single order
-POST /api/requests - (Buyer) Create a order
-PATCH /api/requests/status/:requestId - (Seller) Change order status
-PATCH /api/requests/:requestId - (Seller/Admin) Update order
-PATCH /api/requests/create-payment/:requestId - (Buyer) Initiate payment
-PATCH /api/requests/verify-payment/:paymentId - (Buyer) Verify payment
-DELETE /api/requests/:requestId - (Admin/Buyer) Delete order
+GET /api/orders - (Admin) Get all orders
+GET /api/orders/personal - (Buyer/Seller) Get personal orders
+GET /api/orders/:orderId - Get a single order
+POST /api/orders - (Buyer) Create a order
+PATCH /api/orders/status/:orderId - (Seller) Change order status
+PATCH /api/orders/:orderId - (Seller/Admin) Update order
+PATCH /api/orders/create-payment/:orderId - (Buyer) Initiate payment
+PATCH /api/orders/verify-payment/:paymentId - (Buyer) Verify payment
+DELETE /api/orders/:orderId - (Admin/Buyer) Delete order
 ```
 
 ## Live Server

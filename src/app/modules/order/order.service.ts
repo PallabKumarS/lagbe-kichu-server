@@ -12,34 +12,14 @@ import {
 } from '../../utils/sendMail';
 import UserModel from '../user/user.model';
 import { makePaymentAsync, verifyPaymentAsync } from './order.utils';
+import { TListing } from '../listing/listing.interface';
+import { TUser } from '../user/user.interface';
 
-interface PopulatedListing {
-  rentPrice: number;
-  houseLocation: string;
-}
-
-interface PopulatedTenant {
-  name: string;
-  address: string;
-  email: string;
-  phone: string;
-}
-
-interface PopulatedLandlord {
-  userId: string;
-}
-
-type PopulatedOrder = {
-  listingId: PopulatedListing;
-  buyerId: PopulatedTenant;
-  sellerId: PopulatedLandlord;
-  orderId: string;
-  status: 'pending' | 'approved' | 'rejected' | 'paid' | 'cancelled';
-  message?: string;
-  moveInDate: Date;
-  rentDuration: string;
-  transaction?: Record<string, any>;
+type PopulatedOrder = TOrder & {
+  listingId: TListing;
+  buyerId: TUser;
 };
+
 // get all orders from db (admin)
 const getAllOrderFromDB = async (query: Record<string, unknown>) => {
   const orderQuery = new QueryBuilder(
@@ -55,7 +35,7 @@ const getAllOrderFromDB = async (query: Record<string, unknown>) => {
         foreignField: 'userId',
       })
       .populate({
-        path: 'sellerId',
+        path: 'listingId.sellerId',
         localField: 'sellerId',
         foreignField: 'userId',
       }),
@@ -73,59 +53,17 @@ const getAllOrderFromDB = async (query: Record<string, unknown>) => {
 
 // create order in the db (buyer)
 const createOrderIntoDB = async (payload: TOrder) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     payload.orderId = await generateOrderId();
 
-    const isOrderExists = await OrderModel.findOne({
-      listingId: payload.listingId,
-      buyerId: payload.buyerId,
-    });
+    const result = await OrderModel.create(payload);
 
-    if (isOrderExists) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        'You have already applied for this listing',
-      );
-    }
-
-    const result = await OrderModel.create([payload], { session });
-
-    if (result?.length === 0) {
+    if (!result) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create order');
     }
 
-    const user = await UserModel.findOne({ userId: payload.sellerId });
-    if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
-
-    const listing = await ListingModel.findOne({
-      listingId: payload.listingId,
-    });
-    if (!listing) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
-    }
-
-    const info = await sendOrderStatusChangeEmail(
-      user?.email,
-      payload?.orderId as string,
-      payload?.status,
-      payload?.listingId,
-      listing?.title,
-    );
-    if (info.accepted.length === 0) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
-    }
-    await session.commitTransaction();
-    session.endSession();
-
     return result;
   } catch (err: any) {
-    await session.abortTransaction();
-    session.endSession();
     throw new Error(err);
   }
 };
@@ -150,7 +88,7 @@ const getPersonalOrderFromDB = async (
         foreignField: 'userId',
       })
       .populate({
-        path: 'sellerId',
+        path: 'listingId.sellerId',
         localField: 'sellerId',
         foreignField: 'userId',
       }),
@@ -177,7 +115,7 @@ const getSingleOrderFromDB = async (orderId: string) => {
       foreignField: 'userId',
     })
     .populate({
-      path: 'sellerId',
+      path: 'listingId.sellerId',
       localField: 'sellerId',
       foreignField: 'userId',
     });
@@ -198,10 +136,6 @@ const changeOrderStatusIntoDB = async (
 
     if (!isOrderExists) {
       throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
-    }
-
-    if (isOrderExists.status === 'paid') {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Order already paid');
     }
 
     const result = await OrderModel.findOneAndUpdate(
@@ -233,8 +167,6 @@ const changeOrderStatusIntoDB = async (
       user?.email,
       result?.orderId as string,
       result?.status,
-      result?.listingId,
-      listing?.title,
     );
     if (info.accepted.length === 0) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
@@ -278,7 +210,7 @@ const deleteOrderFromDB = async (orderId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Order not found');
   }
 
-  if (isOrderExists.status === 'paid') {
+  if (isOrderExists.paymentType === 'payment') {
     throw new AppError(httpStatus.BAD_REQUEST, 'Order already paid');
   }
 
@@ -301,7 +233,7 @@ const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
         foreignField: 'userId',
       })
       .populate({
-        path: 'sellerId',
+        path: 'listingId.sellerId',
         localField: 'sellerId',
         foreignField: 'userId',
       })
@@ -309,14 +241,14 @@ const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
       .exec()) as unknown as PopulatedOrder;
 
     const shurjopayPayload = {
-      amount: orderData?.listingId.rentPrice,
+      amount: orderData?.price,
       order_id: orderId,
       currency: 'BDT',
       customer_name: orderData?.buyerId.name,
       customer_address: orderData?.buyerId?.address || 'N/A',
       customer_email: orderData?.buyerId.email,
       customer_phone: orderData?.buyerId?.phone || 'N/A',
-      customer_city: orderData?.listingId.houseLocation || 'N/A',
+      customer_city: 'N/A',
       client_ip,
     };
 
@@ -372,7 +304,7 @@ const verifyPaymentFromDB = async (paymentId: string) => {
         'transaction.transactionStatus': payment[0].transaction_status,
         status:
           payment[0].bank_status == 'Success'
-            ? 'paid'
+            ? 'processing'
             : payment[0].bank_status == 'Failed'
               ? 'pending'
               : payment[0].bank_status == 'Cancel'
@@ -386,16 +318,30 @@ const verifyPaymentFromDB = async (paymentId: string) => {
     }
   }
 
-  // if the payment is successful, update the bike quantity
+  // if the payment is successful
   if (payment[0].bank_status === 'Success') {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
       // check if order was placed before
-      const orderExists = await OrderModel.findOne({
+      const orderExists = (await OrderModel.findOne({
         'transaction.paymentId': paymentId,
-      });
+      })
+        .populate({
+          path: 'listingId',
+          localField: 'listingId',
+          foreignField: 'listingId',
+        })
+        .populate({
+          path: 'buyerId',
+          localField: 'buyerId',
+          foreignField: 'userId',
+        })
+        .populate({
+          path: 'listingId.sellerId',
+          localField: 'sellerId',
+          foreignField: 'userId',
+        })
+        .lean()
+        .exec()) as unknown as PopulatedOrder;
 
       if (!orderExists) {
         throw new AppError(
@@ -404,57 +350,29 @@ const verifyPaymentFromDB = async (paymentId: string) => {
         );
       }
 
-      // update  (first transaction)
-      const updatedOrder = await OrderModel.findOneAndUpdate(
-        { orderId: orderExists?.orderId },
-        { status: 'paid' },
-        { new: true, session },
-      );
-
-      if (!updatedOrder) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
-      }
-
-      // update order (second transaction)
-      const updatedListing = await ListingModel.findOneAndUpdate(
-        { listingId: orderExists?.listingId },
-        {
-          isAvailable: false,
-        },
-      );
-
-      if (!updatedListing) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update listing');
-      }
-
       const user = await UserModel.findOne({
-        userId: updatedOrder?.buyerId,
+        userId: orderExists?.buyerId.userId,
       });
+
+
       if (!user) {
         throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
       }
 
       const info = await sendPaymentConfirmationEmail(
         user?.email,
-        updatedOrder?.orderId as string,
-        updatedOrder?.transaction?.paymentId as string,
-        updatedListing?.listingId as string,
-        updatedListing?.price,
+        orderExists?.orderId as string,
+        orderExists?.transaction?.paymentId as string,
+        orderExists?.listingId.title,
+        orderExists?.price,
       );
 
       if (info.accepted.length === 0) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
       }
-
-      await session.commitTransaction();
-      await session.endSession();
     } catch (err: any) {
-      await session.abortTransaction();
-      await session.endSession();
       throw new Error(err);
     }
-  } else {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Payment failed');
   }
 
   return payment[0];

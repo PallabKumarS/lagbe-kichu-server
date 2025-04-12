@@ -14,6 +14,12 @@ router.get(
 );
 
 router.get(
+  '/verify-payment/:paymentId',
+  auth(USER_ROLE.buyer),
+  OrderController.verifyPayment,
+);
+
+router.get(
   '/:orderId',
   auth(USER_ROLE.admin, USER_ROLE.buyer),
   OrderController.getSingleOrder,
@@ -37,12 +43,6 @@ router.patch(
   '/create-payment/:orderId',
   auth(USER_ROLE.buyer),
   OrderController.createPayment,
-);
-
-router.get(
-  '/verify-payment/:paymentId',
-  auth(USER_ROLE.buyer),
-  OrderController.verifyPayment,
 );
 
 router.delete(

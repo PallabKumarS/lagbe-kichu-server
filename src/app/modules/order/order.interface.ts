@@ -2,14 +2,14 @@ import { Model } from 'mongoose';
 
 export type TOrder = {
   buyerId: string;
-  listingId: string;
-  sellerId: string;
+  listingId: string[];
   orderId?: string;
+  price: number;
+  paymentType: 'payment' | 'cash';
   status:
     | 'pending'
     | 'processing'
     | 'out for delivery'
-    | 'paid'
     | 'completed'
     | 'cancelled';
   message?: string;

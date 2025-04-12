@@ -32,7 +32,7 @@ app.use(express.json());
 app.use('/api/users', UserRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/api/listings', ListingRoutes);
-app.use('/api/requests', OrderRoutes);
+app.use('/api/orders', OrderRoutes);
 app.use('/api/reviews', ReviewRoutes);
 app.use('/api/categories', CategoryRoutes);
 

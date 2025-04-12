@@ -40,15 +40,13 @@ export const sendOrderStatusChangeEmail = async (
   email: string,
   orderId: string,
   newStatus: string,
-  listingId: string,
-  title: string,
 ) => {
   const subject = `Order Status Update - ${orderId}`;
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2>Order Status Update</h2>
       <p>Dear User,</p>
-      <p>Your order for the listing <strong>${listingId}, ${title} has been updated.</p>
+      <p>Your order,<strong>${orderId}</strong> has been updated.</p>
       <p>Current Status: <span style="color: blue;">${newStatus}</span></p>
       <p>Order ID: ${orderId}</p>
       <p>If you have any questions, please contact our support team.</p>

@@ -4,7 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import { OrderService } from './order.service';
 import httpStatus from 'http-status';
 
-// get all requests controller (admin)
+// get all orders controller (admin)
 const getAllOrder = catchAsync(async (req: Request, res: Response) => {
   const data = await OrderService.getAllOrderFromDB(req.query);
 
@@ -28,7 +28,7 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// get personal requests controller (buyer & seller)
+// get personal orders controller (buyer & seller)
 const getPersonalOrder = catchAsync(async (req: Request, res: Response) => {
   const { data, meta } = await OrderService.getPersonalOrderFromDB(
     req.user?.userId,
@@ -86,7 +86,7 @@ const updateOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// delete requests controller (admin)
+// delete orders controller (admin)
 const deleteOrder = catchAsync(async (req: Request, res: Response) => {
   const data = await OrderService.deleteOrderFromDB(req.params.orderId);
 

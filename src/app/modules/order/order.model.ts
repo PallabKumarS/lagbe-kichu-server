@@ -3,16 +3,24 @@ import { IOrder, TOrder } from './order.interface';
 
 const orderSchema = new Schema<TOrder, IOrder>(
   {
+    price: { type: Number, required: true },
+    paymentType: { type: String, enum: ['payment', 'cash'], required: true },
+    buyerId: { type: String, ref: 'User',required: true },
+    orderId: { type: String, unique: true },
     message: { type: String },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected', 'paid', 'cancelled'],
+      enum: [
+        'pending',
+        'processing',
+        'rejected',
+        'out for delivery',
+        'completed',
+        'cancelled',
+      ],
       default: 'pending',
     },
-    buyerId: { type: String, ref: 'User' },
-    listingId: { type: String, ref: 'Listing' },
-    sellerId: { type: String, ref: 'User' },
-    orderId: { type: String, unique: true },
+    listingId: [{ type: String, ref: 'Listing' }],
     sellerPhoneNumber: { type: String },
     transaction: {
       paymentId: { type: String },

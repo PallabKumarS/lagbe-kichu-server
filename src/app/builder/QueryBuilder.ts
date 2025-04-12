@@ -1,4 +1,4 @@
-import { FilterQuery, Query } from 'mongoose';
+import mongoose, { FilterQuery, Query, Types } from 'mongoose';
 
 class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -13,21 +13,34 @@ class QueryBuilder<T> {
     const searchTerm = this?.query?.searchTerm;
 
     if (searchTerm) {
-      this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map((field) => {
+      const orConditions: FilterQuery<T>[] = searchableFields
+        .map((field) => {
           if (field === 'price') {
             const numericValue = Number(searchTerm);
-            if (!isNaN(numericValue))
-              return {
-                [field]: numericValue,
-              };
-            return { [field]: null };
+            if (!isNaN(numericValue)) return { [field]: numericValue };
+            return null;
           }
+
+          // Handle ObjectId fields (like category)
+          if (['category'].includes(field)) {
+            if (mongoose.Types.ObjectId.isValid(searchTerm as string)) {
+              return {
+                [field]: new mongoose.Types.ObjectId(searchTerm as string),
+              };
+            }
+            return null;
+          }
+
+          // Handle string fields (title, etc.)
           return {
-            [field]: { $regex: searchTerm, $options: 'i' },
+            [field]: { $regex: new RegExp(searchTerm as string, 'i') },
           };
-        }) as FilterQuery<T>[],
-      });
+        })
+        .filter((condition): condition is FilterQuery<T> => condition !== null);
+
+      if (orConditions.length > 0) {
+        this.modelQuery = this.modelQuery.find({ $or: orConditions });
+      }
     }
 
     return this;
@@ -37,18 +50,26 @@ class QueryBuilder<T> {
   filter() {
     const queryObj = { ...this.query }; // copy
 
-    console.log(queryObj);
+    // console.log(queryObj);
 
     // Filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
+    // if (typeof queryObj.category === 'string') {
+    //   queryObj.category = {
+    //     $in: queryObj.category
+    //       .split(',')
+    //       .map((category) => new RegExp(category.trim(), 'i')), // Partial match, no ^ or $
+    //   };
+    // }
+
     if (typeof queryObj.category === 'string') {
       queryObj.category = {
         $in: queryObj.category
           .split(',')
-          .map((category) => new RegExp(category.trim(), 'i')), // Partial match, no ^ or $
+          .map((id) => new Types.ObjectId(id.trim())),
       };
     }
 

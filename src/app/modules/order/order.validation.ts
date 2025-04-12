@@ -5,11 +5,13 @@ const createRequestValidation = z.object({
     buyerId: z.string({
       required_error: 'Buyer is required',
     }),
-    listingId: z.string({
-      required_error: 'Listing is required',
-    }),
-    sellerId: z.string({
-      required_error: 'Seller is required',
+    listingId: z.array(
+      z.string({
+        required_error: 'ListingId is required',
+      }),
+    ),
+    price: z.number({
+      required_error: 'Price is required',
     }),
   }),
 });

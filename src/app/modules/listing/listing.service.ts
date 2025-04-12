@@ -10,22 +10,19 @@ import httpStatus from 'http-status';
 
 // get all listings from db
 const getAllListingsFromDB = async (query: Record<string, unknown>) => {
-  const listingQuery = new QueryBuilder(
-    ListingModel.find({})
-      .populate({
-        path: 'sellerId',
-        localField: 'sellerId',
-        foreignField: 'userId',
-      })
-      .populate('category'),
-    query,
-  )
+  const listingQuery = new QueryBuilder(ListingModel.find({}), query)
     .search(listingSearchableFields)
     .filter()
     .sort()
     .paginate();
 
-  const data = await listingQuery.modelQuery;
+  const data = await listingQuery.modelQuery
+    .populate({
+      path: 'sellerId',
+      localField: 'sellerId',
+      foreignField: 'userId',
+    })
+    .populate('category');
   const meta = await listingQuery.countTotal();
 
   return { data, meta };
@@ -54,7 +51,7 @@ const getSingleListingFromDB = async (listingId: string) => {
     path: 'sellerId',
     localField: 'sellerId',
     foreignField: 'userId',
-  });
+  }).populate('category');
   return result;
 };
 
