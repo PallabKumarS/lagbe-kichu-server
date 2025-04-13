@@ -6,7 +6,7 @@ Lagbe Kichu is a rental property management system built using Node.js, Express,
 
 - User Authentication & Authorization (JWT, bcrypt)
 - Role-based Access Control (Admin, Buyer, Seller)
-- Property Listings & Requests Management
+- Property Listings & Orders Management
 - Secure Payments via Surjopay
 - Email Notifications using Nodemailer
 - Data Validation with Zod
@@ -100,7 +100,7 @@ PATCH /api/listings/status/:listingId - (Seller/Admin) Update listing status
 DELETE /api/listings/:listingId - (Seller/Admin) Delete a listing
 ```
 
-### Requests
+### Orders
 
 ```
 GET /api/orders - (Admin) Get all orders
@@ -116,6 +116,6 @@ DELETE /api/orders/:orderId - (Admin/Buyer) Delete order
 
 ## Live Server
 
-[Backend Live Link](https://pks-nest-hunt-server.vercel.app)
+[Backend Live Link](https://pks-lagbe-kichu-server.vercel.app)
 
-[GitHub Repository](https://github.com/PallabKumarS/assignment-06-nest-hunt-server)
+[GitHub Repository](https://github.com/PallabKumarS/lagbe-kichu-server)
