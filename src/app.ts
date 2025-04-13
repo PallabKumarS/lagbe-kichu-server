@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       (config.local_client as string) ||
-        'https://pks-nest-hunt-client.vercel.app',
+        'https://pks-lagbe-kichu-client.vercel.app',
       (config.client as string) || 'http://localhost:3000',
     ],
     credentials: true,
