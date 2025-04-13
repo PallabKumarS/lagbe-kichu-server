@@ -33,6 +33,7 @@ const getPersonalOrder = catchAsync(async (req: Request, res: Response) => {
   const { data, meta } = await OrderService.getPersonalOrderFromDB(
     req.user?.userId,
     req.query,
+    req.user?.role,
   );
 
   sendResponse(res, {

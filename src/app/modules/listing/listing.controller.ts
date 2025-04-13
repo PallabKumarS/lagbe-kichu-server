@@ -102,18 +102,6 @@ const deleteListing = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// get listing locations
-const getListingLocations = catchAsync(async (req: Request, res: Response) => {
-  const result = await ListingService.getListingLocationsFromDB();
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Listing locations retrieved successfully',
-    data: result,
-  });
-});
-
 // update listing discount
 const updateListingDiscount = catchAsync(
   async (req: Request, res: Response) => {
@@ -142,6 +130,5 @@ export const ListingController = {
   updateListing,
   deleteListing,
   createListing,
-  getListingLocations,
   updateListingDiscount,
 };

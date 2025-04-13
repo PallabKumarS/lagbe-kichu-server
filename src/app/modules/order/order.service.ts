@@ -72,11 +72,10 @@ const createOrderIntoDB = async (payload: TOrder) => {
 const getPersonalOrderFromDB = async (
   userId: string,
   query: Record<string, unknown>,
+  role: string,
 ) => {
   const orderQuery = new QueryBuilder(
-    OrderModel.find({
-      $or: [{ buyerId: userId }, { sellerId: userId }],
-    })
+    OrderModel.find(role === 'buyer' ? { buyerId: userId } : {})
       .populate({
         path: 'listingId',
         localField: 'listingId',
@@ -93,7 +92,10 @@ const getPersonalOrderFromDB = async (
         foreignField: 'userId',
       }),
     query,
-  );
+  )
+    .paginate()
+    .filter()
+    .sort();
 
   const data = await orderQuery.modelQuery;
   const meta = await orderQuery.countTotal();
@@ -320,6 +322,9 @@ const verifyPaymentFromDB = async (paymentId: string) => {
 
   // if the payment is successful
   if (payment[0].bank_status === 'Success') {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
       // check if order was placed before
       const orderExists = (await OrderModel.findOne({
@@ -354,7 +359,6 @@ const verifyPaymentFromDB = async (paymentId: string) => {
         userId: orderExists?.buyerId.userId,
       });
 
-
       if (!user) {
         throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
       }
@@ -370,7 +374,12 @@ const verifyPaymentFromDB = async (paymentId: string) => {
       if (info.accepted.length === 0) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
       }
+
+      session.commitTransaction();
+      session.endSession();
     } catch (err: any) {
+      session.abortTransaction();
+      session.endSession();
       throw new Error(err);
     }
   }

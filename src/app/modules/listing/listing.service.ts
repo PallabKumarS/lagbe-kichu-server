@@ -47,11 +47,13 @@ const getSingleListingFromDB = async (listingId: string) => {
   const result = await ListingModel.findOne({
     listingId,
     isDeleted: false,
-  }).populate({
-    path: 'sellerId',
-    localField: 'sellerId',
-    foreignField: 'userId',
-  }).populate('category');
+  })
+    .populate({
+      path: 'sellerId',
+      localField: 'sellerId',
+      foreignField: 'userId',
+    })
+    .populate('category');
   return result;
 };
 
@@ -92,9 +94,6 @@ const updateListingStatusIntoDB = async (listingId: string) => {
 
   const order = await OrderModel.findOne({ listingId: listingId });
 
-  if (order?.status === 'paid' && !isListing.isAvailable) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Listing is already rented');
-  }
 
   const result = await ListingModel.findOneAndUpdate(
     { listingId },
@@ -131,27 +130,6 @@ const deleteListingFromDB = async (listingId: string) => {
   return result;
 };
 
-// get listing locations from db
-const getListingLocationsFromDB = async () => {
-  const result = await ListingModel.aggregate([
-    // first pipeline
-    {
-      $group: {
-        _id: '$houseLocation',
-      },
-    },
-
-    // second pipeline
-    {
-      $project: {
-        location: '$_id',
-        _id: 0,
-      },
-    },
-  ]);
-
-  return result;
-};
 
 // update discount in the db
 const updateListingDiscountIntoDB = async (
@@ -199,6 +177,5 @@ export const ListingService = {
   updateListingStatusIntoDB,
   updateListingIntoDB,
   deleteListingFromDB,
-  getListingLocationsFromDB,
   updateListingDiscountIntoDB,
 };
