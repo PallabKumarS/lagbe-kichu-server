@@ -7,9 +7,9 @@ export type TListing = {
   price: number;
   images: string[];
   sellerId: string;
-  rating?: {
+  reviewRating?: {
     rating: number;
-    totalRating: number;
+    totalCount: number;
   };
   discount?: number;
   discountStartDate?: Date;

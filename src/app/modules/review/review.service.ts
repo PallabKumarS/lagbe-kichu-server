@@ -101,16 +101,16 @@ const createReviewIntoDB = async (payload: Partial<TReview>) => {
     }
 
     const newRating =
-      (listingExists.rating!.rating! + payload.rating!) /
-        listingExists.rating!.totalRating! +
+      (listingExists.reviewRating!.rating! + payload.rating!) /
+        listingExists.reviewRating!.totalCount! +
       1;
 
     const updatedListing = await ListingModel.findOneAndUpdate(
       { listingId: listingExists.listingId },
       {
-        rating: {
+        reviewRating: {
           rating: newRating,
-          totalRating: listingExists.rating!.totalRating! + 1,
+          totalCount: listingExists.reviewRating!.totalCount! + 1,
         },
       },
       { new: true, session },
