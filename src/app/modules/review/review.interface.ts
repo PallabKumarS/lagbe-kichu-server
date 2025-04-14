@@ -3,7 +3,6 @@ import { Model, Types } from 'mongoose';
 export type TReview = {
   userId: string;
   listingId: string;
-  orderId: string;
   rating: number;
   isReviewed: boolean;
   comment?: string;

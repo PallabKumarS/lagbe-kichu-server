@@ -5,9 +5,6 @@ const createReviewValidation = z.object({
     userId: z.string({
       required_error: 'UserId is required',
     }),
-    OrderId: z.string({
-      required_error: 'OrderId is required',
-    }),
     listingId: z.string({
       required_error: 'ListingId is required',
     }),

@@ -8,11 +8,6 @@ const reviewSchema = new Schema<TReview, IReview>(
       ref: 'User',
       required: true,
     },
-    orderId: {
-      type: String,
-      ref: 'Order',
-      required: true,
-    },
     listingId: {
       type: String,
       ref: 'Listing',

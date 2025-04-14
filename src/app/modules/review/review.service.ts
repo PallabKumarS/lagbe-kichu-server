@@ -22,11 +22,6 @@ const getAllReviewsFromDB = async (
         path: 'listingId',
         localField: 'listingId',
         foreignField: 'listingId',
-      })
-      .populate({
-        path: 'orderId',
-        localField: 'orderId',
-        foreignField: 'orderId',
       }),
     query,
   )
@@ -45,7 +40,7 @@ const getAllReviewsFromDB = async (
 
 // get all reviews of a listing
 const getAllListingReviewsFromDB = async (listingId: string) => {
-  const result = await ReviewModel.find({ listingId })
+  const result = await ReviewModel.find({ listingId: listingId })
     .populate({
       path: 'userId',
       localField: 'userId',
@@ -55,11 +50,6 @@ const getAllListingReviewsFromDB = async (listingId: string) => {
       path: 'listingId',
       localField: 'listingId',
       foreignField: 'listingId',
-    })
-    .populate({
-      path: 'orderId',
-      localField: 'orderId',
-      foreignField: 'orderId',
     });
   return result;
 };
