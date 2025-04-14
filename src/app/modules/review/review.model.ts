@@ -22,6 +22,10 @@ const reviewSchema = new Schema<TReview, IReview>(
       type: Number,
       required: true,
     },
+    isReviewed: {
+      type: Boolean,
+      default: false,
+    },
     comment: {
       type: String,
     },

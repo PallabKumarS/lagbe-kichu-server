@@ -7,6 +7,10 @@ export type TListing = {
   price: number;
   images: string[];
   sellerId: string;
+  rating?: {
+    rating: number;
+    totalRating: number;
+  };
   discount?: number;
   discountStartDate?: Date;
   discountEndDate?: Date;

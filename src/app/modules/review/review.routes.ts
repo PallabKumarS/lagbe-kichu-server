@@ -6,7 +6,9 @@ import { USER_ROLE } from '../user/user.constants';
 const router = Router();
 
 // Define routes
-router.get('/:listingId', ReviewController.getAllReview);
+router.get('/', auth(USER_ROLE.buyer), ReviewController.getAllReviews);
+
+router.get('/:listingId', ReviewController.getAllListingReviews);
 
 router.post('/', auth(USER_ROLE.buyer), ReviewController.createReview);
 

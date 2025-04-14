@@ -1,14 +1,50 @@
 import { Types } from 'mongoose';
 import { TReview } from './review.interface';
 import ReviewModel from './review.model';
-import { TUser } from '../user/user.interface';
 import { AppError } from '../../errors/AppError';
 import httpStatus from 'http-status';
-import { JwtPayload } from 'jsonwebtoken';
 import OrderModel from '../order/order.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+
+// get all reviews
+const getAllReviewsFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  const reviewQuery = new QueryBuilder(
+    ReviewModel.find({ userId })
+      .populate({
+        path: 'userId',
+        localField: 'userId',
+        foreignField: 'userId',
+      })
+      .populate({
+        path: 'listingId',
+        localField: 'listingId',
+        foreignField: 'listingId',
+      })
+      .populate({
+        path: 'orderId',
+        localField: 'orderId',
+        foreignField: 'orderId',
+      }),
+    query,
+  )
+    .paginate()
+    .filter()
+    .sort();
+
+  const data = await reviewQuery.modelQuery;
+  const meta = await reviewQuery.countTotal();
+
+  return {
+    meta,
+    data,
+  };
+};
 
 // get all reviews of a listing
-const getAllReviewFromDB = async (listingId: string) => {
+const getAllListingReviewsFromDB = async (listingId: string) => {
   const result = await ReviewModel.find({ listingId })
     .populate({
       path: 'userId',
@@ -30,6 +66,18 @@ const getAllReviewFromDB = async (listingId: string) => {
 
 // post a review
 const createReviewIntoDB = async (payload: Partial<TReview>) => {
+  const isReviewExists = await ReviewModel.findOne({
+    userId: payload.userId,
+    listingId: payload.listingId,
+  });
+
+  if (isReviewExists) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You have already reviewed this product, please update your review',
+    );
+  }
+
   const isUserOrdered = await OrderModel.findOne({
     buyerId: payload.userId,
     listingId: payload.listingId,
@@ -85,7 +133,8 @@ const deleteReviewFromDB = async (id: Types.ObjectId, userId: string) => {
 };
 
 export const ReviewService = {
-  getAllReviewFromDB,
+  getAllReviewsFromDB,
+  getAllListingReviewsFromDB,
   createReviewIntoDB,
   updateReviewIntoDB,
   deleteReviewFromDB,

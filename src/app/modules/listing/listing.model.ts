@@ -9,6 +9,10 @@ const listingSchema = new Schema<TListing, IListing>(
     price: { type: Number, required: true },
     images: { type: [String], required: true },
     sellerId: { type: String, ref: 'User' },
+    rating: {
+      rating: { type: Number, default: 0 },
+      totalRating: { type: Number, default: 0 },
+    },
     discount: { type: Number, default: 0 },
     discountStartDate: { type: Date },
     discountEndDate: { type: Date },

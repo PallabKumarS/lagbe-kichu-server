@@ -5,6 +5,7 @@ export type TReview = {
   listingId: string;
   orderId: string;
   rating: number;
+  isReviewed: boolean;
   comment?: string;
 };
 

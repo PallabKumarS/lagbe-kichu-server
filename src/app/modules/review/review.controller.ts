@@ -5,11 +5,28 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { Types } from 'mongoose';
 
+// get all reviews
+const getAllReviews = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const query = req.query;
+  const { data, meta } = await ReviewService.getAllReviewsFromDB(userId, query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reviews retrieved successfully',
+    data,
+    meta,
+  });
+});
+
 // get all reviews of a listing
-const getAllReview = catchAsync(async (req: Request, res: Response) => {
+const getAllListingReviews = catchAsync(async (req: Request, res: Response) => {
   const { listingId } = req.params;
 
-  const data = await ReviewService.getAllReviewFromDB(listingId as string);
+  const data = await ReviewService.getAllListingReviewsFromDB(
+    listingId as string,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -67,7 +84,8 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const ReviewController = {
-  getAllReview,
+  getAllReviews,
+  getAllListingReviews,
   createReview,
   updateReview,
   deleteReview,
