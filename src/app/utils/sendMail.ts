@@ -19,7 +19,7 @@ const sendEmail = async (email: string, html: string, subject: string) => {
 
     // Email configuration
     const mailOptions: any = {
-      from: '"NestHunt" <support@nesthunt.com>',
+      from: '"LagbeKichu" <support@lagbekichu.com>',
       to: email,
       subject,
       html,
@@ -50,7 +50,7 @@ export const sendOrderStatusChangeEmail = async (
       <p>Current Status: <span style="color: blue;">${newStatus}</span></p>
       <p>Order ID: ${orderId}</p>
       <p>If you have any questions, please contact our support team.</p>
-      <p>Best regards,<br>NestHunt Team</p>
+      <p>Best regards,<br>LagbeKichu Team</p>
     </div>
   `;
 
@@ -62,7 +62,6 @@ export const sendPaymentConfirmationEmail = async (
   email: string,
   orderId: string,
   paymentId: string,
-  title: string,
   amount: number,
 ) => {
   const subject = `Payment Confirmation - ${orderId}`;
@@ -70,7 +69,7 @@ export const sendPaymentConfirmationEmail = async (
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2>Payment Confirmation</h2>
       <p>Dear User,</p>
-      <p>Your payment for the listing <strong>${title}</strong> has been successfully processed.</p>
+      <p>Your payment for the order has been successfully processed.</p>
       <p>Payment Details:</p>
       <ul>
         <li>Order ID: ${orderId}</li>
@@ -78,7 +77,7 @@ export const sendPaymentConfirmationEmail = async (
         <li>Amount Paid: $${amount.toFixed(2)}</li>
       </ul>
       <p>Thank you for your payment. Enjoy your booking!</p>
-      <p>Best regards,<br>NestHunt Team</p>
+      <p>Best regards,<br>LagbeKichu Team</p>
     </div>
   `;
 

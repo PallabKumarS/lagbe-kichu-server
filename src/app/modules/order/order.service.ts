@@ -367,7 +367,6 @@ const verifyPaymentFromDB = async (paymentId: string) => {
         user?.email,
         orderExists?.orderId as string,
         orderExists?.transaction?.paymentId as string,
-        orderExists?.listingId.title,
         orderExists?.price,
       );
 
