@@ -9,36 +9,33 @@ dayjs.extend(timezone);
 
 const TIMEZONE = 'Asia/Dhaka';
 
-cron.schedule('* * * * *', async () => {
-  const now = dayjs().tz(TIMEZONE).toDate();
+export const startDiscountCronJob = () => {
+  cron.schedule('* * * * *', async () => {
+    const now = dayjs().tz(TIMEZONE).toDate();
 
-  try {
-    // 1. Activate discount if current time >= discountStartTime
-    await ListingModel.updateMany(
-      {
-        discountStartTime: { $lte: now },
-        isDiscountActive: false,
-      },
-      {
-        $set: { isDiscountActive: true },
-      },
-    );
-
-    // 2. Deactivate discount if current time >= discountEndTime
-    await ListingModel.updateMany(
-      {
-        discountEndTime: { $lte: now },
-        isDiscountActive: true,
-      },
-      {
-        $set: {
-          discount: 0,
+    try {
+      await ListingModel.updateMany(
+        {
+          discountStartDate: { $lte: now },
           isDiscountActive: false,
         },
-      },
-    );
+        { $set: { isDiscountActive: true } },
+      );
 
-  } catch (err) {
-    console.error('Discount cron error:', err);
-  }
-});
+      await ListingModel.updateMany(
+        {
+          discountEndDate: { $lte: now },
+          isDiscountActive: true,
+        },
+        {
+          $set: {
+            discount: 0,
+            isDiscountActive: false,
+          },
+        },
+      );
+    } catch (err) {
+      console.error('Discount cron error:', err);
+    }
+  });
+};
