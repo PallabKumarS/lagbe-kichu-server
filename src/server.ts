@@ -3,10 +3,9 @@ import app from './app';
 import config from './app/config';
 import { Server } from 'http';
 import { startDiscountCronJob } from './app/utils/discountStart&Reset';
-import { WebSocketServer } from 'ws';
+import { initWebSocket } from './app/utils/websocket';
 
 let server: Server;
-export let wss: WebSocketServer;
 
 async function main() {
   try {
@@ -20,39 +19,10 @@ async function main() {
       console.log(`🚀 Server is running successfully! 🚀`);
     });
 
-    const wss = new WebSocketServer({
-      server,
-    });
-
-    // 🔁 Heartbeat checker (every 30s)
-    setInterval(() => {
-      wss.clients.forEach((ws: any) => {
-        if (!ws.isAlive) return ws.terminate();
-        ws.isAlive = false;
-        ws.ping();
-      });
-    }, 30000);
-
-    // wss server initial start up event
+    // Initialize WebSocket server
+    const wss = initWebSocket(server);
     wss.on('listening', () => {
-      console.log('WebSocket server is running and listening for connections!');
-    });
-
-    // start ws server and listen for connections
-    wss.on('connection', (ws) => {
-      console.log('Client connected');
-
-      ws.send(
-        JSON.stringify({ type: 'welcome', message: 'Connected to server' }),
-      );
-
-      ws.on('message', (data) => {
-        console.log('Received:', data.toString());
-      });
-
-      ws.on('close', () => {
-        console.log('Client disconnected');
-      });
+      console.log('WebSocket server is running');
     });
 
     // start cron job
@@ -61,6 +31,7 @@ async function main() {
     console.log(err);
   }
 }
+
 main();
 
 process.on('unhandledRejection', (err) => {
