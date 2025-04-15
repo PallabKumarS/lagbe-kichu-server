@@ -134,8 +134,6 @@ const updateListingDiscountIntoDB = async (
   listingId: string,
   payload: Partial<TListing>,
 ) => {
-  console.log('hit');
-
   const isListing = await ListingModel.isListingExists(listingId);
   if (!isListing) {
     throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
@@ -155,11 +153,12 @@ const updateListingDiscountIntoDB = async (
   if (
     payload.discountStartDate &&
     payload.discountEndDate &&
-    dayjs(payload.discountEndDate).isAfter(dayjs(payload.discountStartDate))
+    dayjs(payload.discountEndDate).isBefore(dayjs(payload.discountStartDate)) &&
+    dayjs(payload.discountStartDate).isAfter(dayjs(new Date()))
   ) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      'Discount end date cannot be before start date',
+      'Discount end date cannot be before start date and start date cannot be in the past',
     );
   }
 
