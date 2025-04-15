@@ -94,7 +94,6 @@ const updateListingStatusIntoDB = async (listingId: string) => {
 
   const order = await OrderModel.findOne({ listingId: listingId });
 
-
   const result = await ListingModel.findOneAndUpdate(
     { listingId },
     { isAvailable: !isListing.isAvailable },
@@ -130,12 +129,13 @@ const deleteListingFromDB = async (listingId: string) => {
   return result;
 };
 
-
 // update discount in the db
 const updateListingDiscountIntoDB = async (
   listingId: string,
   payload: Partial<TListing>,
 ) => {
+  console.log('hit');
+
   const isListing = await ListingModel.isListingExists(listingId);
   if (!isListing) {
     throw new AppError(httpStatus.NOT_FOUND, 'Listing not found');
@@ -155,7 +155,7 @@ const updateListingDiscountIntoDB = async (
   if (
     payload.discountStartDate &&
     payload.discountEndDate &&
-    dayjs(payload.discountStartDate).isAfter(dayjs(payload.discountEndDate))
+    dayjs(payload.discountEndDate).isAfter(dayjs(payload.discountStartDate))
   ) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
