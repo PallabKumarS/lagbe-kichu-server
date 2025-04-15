@@ -18,13 +18,15 @@ const app: Application = express();
 app.use(
   cors({
     origin: [
-      (config.local_client as string) ||
-        'https://pks-lagbe-kichu-client.vercel.app',
-      (config.client as string) || 'http://localhost:3000',
-    ],
+      config.local_client as string,
+      config.client as string,
+      'http://localhost:3000',
+      'https://pks-lagbe-kichu-client.vercel.app',
+    ].filter(Boolean),
     credentials: true,
   }),
 );
+
 app.use(cookieParser());
 app.use(express.json());
 
