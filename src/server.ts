@@ -48,3 +48,5 @@ process.on('uncaughtException', (err) => {
   console.log('Uncaught Exception detected, closing server...', err);
   process.exit(1);
 });
+
+// export default main;

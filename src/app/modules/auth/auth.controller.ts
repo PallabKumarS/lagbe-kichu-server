@@ -1,8 +1,6 @@
-import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import config from '../../config';
 import httpStatus from 'http-status';
 
 // login user controller
@@ -11,16 +9,16 @@ const loginUser = catchAsync(async (req, res) => {
   const { refreshToken, accessToken } = result;
 
   res.cookie('refreshToken', refreshToken, {
-    secure: config.node_env === 'production',
+    secure: true,
     httpOnly: true,
-    // sameSite: true,
+    sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 
   res.cookie('accessToken', accessToken, {
-    secure: config.node_env === 'production',
+    secure: true,
     httpOnly: true,
-    // sameSite: true,
+    sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24,
   });
 
