@@ -8,7 +8,8 @@ const listingSchema = new Schema<TListing, IListing>(
     description: { type: String, required: true },
     price: { type: Number, required: true },
     images: { type: [String], required: true },
-    sellerId: { type: String, ref: 'User' },
+    sellerId: { type: String, ref: 'User',required: true },
+    videoLink: { type: String, required: true },
     reviewRating: {
       rating: { type: Number, default: 0 },
       totalCount: { type: Number, default: 0 },

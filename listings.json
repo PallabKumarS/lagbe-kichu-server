@@ -1,0 +1,162 @@
+[
+  {
+    "listingId": "L-00004",
+    "title": "Apple iPhone 15 Pro Max",
+    "description": "The latest iPhone with A17 Pro chip, 120Hz display, and improved camera system.",
+    "price": 1199,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781523/616mZZm8-7L_hd096q.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781523/iphone-15-pro-max_jcpako.png",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781523/Apple-iPhone-15-Pro-lineup-hero-230912.jpg.news_app_ed_vzxwbw.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=cVpcl7KGly0",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00005",
+    "title": "Sony WH-1000XM5 Wireless Headphones",
+    "description": "Industry-leading noise cancelling headphones with up to 30 hours of battery life.",
+    "price": 399,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781719/111295_original_local_1200x1050_v3_converted_odt0kn.webp",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781719/WH-1000XM5_keyvisual_silver-Large-scaled_e4zm2q.webp"
+    ],
+    "sellerId": "S-00002",
+    "videoLink": "https://www.youtube.com/watch?v=RloA-5QNJpw",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00006",
+    "title": "Canon EOS R8 Mirrorless Camera",
+    "description": "Full-frame mirrorless camera with 24.2MP sensor and 4K 60p video.",
+    "price": 1499,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781819/eos-r8-frt_gallery-module_04_80769e3992ed4c968a4050363d33853b_gvqfqn.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781819/eos-r8_fergus_kennedy-ambient-8824-pro_bafa365e13b44d8aa00f8c4f25a10b83_c9qap7.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=91LHPTiicCA",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00007",
+    "title": "Bose SoundLink Revolve+ II",
+    "description": "Portable Bluetooth speaker with 360° sound and 17-hour battery life.",
+    "price": 329,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781893/34587543686_09317ef279_b_iy6g1q.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744781894/34628789675_7a85faa4aa_b_gbjefo.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=zqfKD9XlztI",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00008",
+    "title": "PlayStation 5 Disc Edition",
+    "description": "Next-gen gaming console with 4K HDR gaming and ultra-fast SSD.",
+    "price": 499,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782075/61HtpbfdD7L._AC_SL1500__jou6vc.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=D6glslUZ4nM",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00009",
+    "title": "Dyson V15 Detect Cordless Vacuum",
+    "description": "Smart vacuum with laser dust detection and powerful suction.",
+    "price": 749,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782184/01-V15-Detect-Most-powerful-LB_f5zllx.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782178/50085571_858528.PNG_gzxlve.png"
+    ],
+    "sellerId": "S-00002",
+    "videoLink": "https://www.youtube.com/watch?v=7B3pfS6fqHo",
+    "category": "67fa4f5e2702ebad2d98c07b",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00010",
+    "title": "DJI Mini 4 Pro Drone",
+    "description": "Compact drone with 4K 100fps video, omnidirectional obstacle sensing.",
+    "price": 759,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782317/wing-airplane-aircraft-vehicle-equipment-aviation-drone-dji-phantom-3-drone-gear-model-aircraft-atmosphere-of-earth-77309_npruk3.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782317/dji-mini-4-pro-image_wiw2vq.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=F9dqldMYNto",
+    "category": "67fa4ddfe82c4b74436c5ccf",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00011",
+    "title": "LG 260 L Double Door Refrigerator",
+    "description": "Energy-efficient refrigerator with smart inverter compressor and ample storage.",
+    "price": 349,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782572/N04_GL-S292RDSX-Refrigerators-Right-View-D-08_visabv.webp",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782578/D04_q4fpb2.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=9wQRhsZosq0",
+    "category": "67fa4f5e2702ebad2d98c07b",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00012",
+    "title": "IFB 6 Kg Front Load Washing Machine",
+    "description": "Fully automatic washing machine with 5-star energy rating and AI-powered features.",
+    "price": 299,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782705/1_kPvzHC5ChuI46A-T-W3EmA_n93ibt.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782710/IFB-AI-Powered-Washing-Machine-2-jpg_kretcj.webp"
+    ],
+    "sellerId": "S-00002",
+    "videoLink": "https://www.youtube.com/watch?v=56mEdE3Dg98",
+    "category": "67fa4f5e2702ebad2d98c07b",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  },
+  {
+    "listingId": "L-00013",
+    "title": "Philips HD9200 Air Fryer",
+    "description": "Healthier way to fry, bake, grill with little to no oil using rapid air technology.",
+    "price": 129,
+    "images": [
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782767/EncEHWDl6MS1r-xxlarge_r9bqun.jpg",
+      "https://res.cloudinary.com/dchqfpvjb/image/upload/v1744782773/philips9200airfryer1_imvpc5.jpg"
+    ],
+    "sellerId": "S-00001",
+    "videoLink": "https://www.youtube.com/watch?v=fwpGHihMKiY",
+    "category": "67fa4f5e2702ebad2d98c07b",
+    "discount": 0,
+    "isAvailable": true,
+    "isDeleted": false
+  }
+]

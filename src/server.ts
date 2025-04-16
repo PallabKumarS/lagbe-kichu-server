@@ -4,6 +4,7 @@ import config from './app/config';
 import { Server } from 'http';
 import { startDiscountCronJob } from './app/utils/discountStart&Reset';
 import { initWebSocket } from './app/utils/websocket';
+import seedListings from './app/utils/seedListings';
 
 let server: Server;
 
@@ -18,6 +19,8 @@ async function main() {
       console.log(`app is listening on port ${config.port}`);
       console.log(`🚀 Server is running successfully! 🚀`);
     });
+
+    await seedListings();
 
     // Initialize WebSocket server
     const wss = initWebSocket(server);

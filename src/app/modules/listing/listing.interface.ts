@@ -7,6 +7,7 @@ export type TListing = {
   price: number;
   images: string[];
   sellerId: string;
+  videoLink: string;
   reviewRating?: {
     rating: number;
     totalCount: number;
