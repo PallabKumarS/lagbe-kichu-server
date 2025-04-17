@@ -14,6 +14,7 @@ export function initWebSocket(server: Server) {
   wss = new WebSocketServer({ server });
 
   wss.on('connection', (ws: any) => {
+    console.log('Client connected');
     ws.userId = null;
     ws.isAlive = true;
 
@@ -67,38 +68,3 @@ export function broadcast(payload: NotificationPayload) {
     }
   });
 }
-
-// // backendService.ts (can be a service in your backend)
-// import WebSocket from 'ws';
-
-// let wsClient: WebSocket | null = null;
-
-// export function connectToWebSocketServer() {
-//   wsClient = new WebSocket('ws://<websocket-server-ip>:8080');
-
-//   wsClient.on('open', () => {
-//     console.log('Connected to WebSocket server');
-//   });
-
-//   wsClient.on('message', (data) => {
-//     console.log('Received from WebSocket server:', data);
-//   });
-
-//   wsClient.on('close', () => {
-//     console.log('Disconnected from WebSocket server');
-//   });
-
-//   wsClient.on('error', (error) => {
-//     console.error('WebSocket error:', error);
-//   });
-// }
-
-// // Send messages from your backend to WebSocket clients
-// export function sendMessageToClients(message: string) {
-//   if (wsClient && wsClient.readyState === WebSocket.OPEN) {
-//     wsClient.send(message);
-//   }
-// }
-
-// // Call this function when you need to send an update to clients
-// connectToWebSocketServer();

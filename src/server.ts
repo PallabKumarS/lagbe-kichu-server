@@ -24,9 +24,7 @@ async function main() {
 
     // Initialize WebSocket server
     const wss = initWebSocket(server);
-    wss.on('listening', () => {
-      console.log('WebSocket server is running');
-    });
+    console.log('✅ WebSocket server is running');
 
     // start cron job
     startDiscountCronJob();
@@ -51,5 +49,3 @@ process.on('uncaughtException', (err) => {
   console.log('Uncaught Exception detected, closing server...', err);
   process.exit(1);
 });
-
-// export default main;
