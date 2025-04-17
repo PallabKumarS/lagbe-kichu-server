@@ -11,10 +11,6 @@ export function initWebSocket(server: Server) {
     console.log('Client connected');
     ws.isAlive = true;
 
-    ws.send(
-      JSON.stringify({ type: 'welcome', message: 'Connected to server' }),
-    );
-
     ws.on('pong', () => {
       ws.isAlive = true;
     });
@@ -53,7 +49,6 @@ export function broadcast(message: string) {
     }
   });
 }
-
 
 // // backendService.ts (can be a service in your backend)
 // import WebSocket from 'ws';
