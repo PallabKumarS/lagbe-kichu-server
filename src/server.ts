@@ -22,11 +22,11 @@ async function main() {
 
     await seedListings();
 
-    // // Initialize WebSocket server
-    // const wss = initWebSocket(server);
-    // wss.on('listening', () => {
-    //   console.log('WebSocket server is running');
-    // });
+    // Initialize WebSocket server
+    const wss = initWebSocket(server);
+    wss.on('listening', () => {
+      console.log('WebSocket server is running');
+    });
 
     // start cron job
     startDiscountCronJob();
