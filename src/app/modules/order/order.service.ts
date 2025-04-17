@@ -180,7 +180,7 @@ const changeOrderStatusIntoDB = async (
 
     broadcast({
       userId: user?.userId,
-      content: `Your order status has been changed from ${status.status} to ${result.status}. Please check your order status.`,
+      content: `Your order status has been changed from ${isOrderExists.status} to ${result.status}. Please check your order status.`,
     });
 
     if (info.accepted.length === 0) {
