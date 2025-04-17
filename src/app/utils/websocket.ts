@@ -4,11 +4,17 @@ import type { Server } from 'http';
 let wss: WebSocketServer | null = null;
 let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 
+type NotificationPayload = {
+  userId?: string;
+  content: string;
+  [key: string]: any;
+};
+
 export function initWebSocket(server: Server) {
   wss = new WebSocketServer({ server });
 
   wss.on('connection', (ws: any) => {
-    console.log('Client connected');
+    ws.userId = null;
     ws.isAlive = true;
 
     ws.on('pong', () => {
@@ -16,12 +22,13 @@ export function initWebSocket(server: Server) {
     });
 
     ws.on('message', (data: any) => {
-      console.log('Received:', data.toString());
+      const msg = JSON.parse(data.toString());
+      if (msg.type === 'init' && msg.userId) {
+        ws.userId = msg.userId;
+      }
     });
 
-    ws.on('close', () => {
-      console.log('Client disconnected');
-    });
+    ws.on('close', () => {});
   });
 
   // Heartbeat
@@ -31,7 +38,7 @@ export function initWebSocket(server: Server) {
       ws.isAlive = false;
       ws.ping();
     });
-  }, 30000);
+  }, 20000);
 
   return wss;
 }
@@ -41,11 +48,22 @@ export function getWSS() {
   return wss;
 }
 
-export function broadcast(message: string) {
+export function broadcast(payload: NotificationPayload) {
   if (!wss) return;
-  wss.clients.forEach((client) => {
+
+  const message = JSON.stringify(payload);
+
+  wss.clients.forEach((client: any) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
+      // If targeted to specific user
+      if (payload.userId) {
+        if (client.userId === payload.userId) {
+          client.send(message);
+        }
+      } else {
+        // Send to everyone
+        client.send(message);
+      }
     }
   });
 }

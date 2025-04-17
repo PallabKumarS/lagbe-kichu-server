@@ -14,6 +14,7 @@ import UserModel from '../user/user.model';
 import { makePaymentAsync, verifyPaymentAsync } from './order.utils';
 import { TListing } from '../listing/listing.interface';
 import { TUser } from '../user/user.interface';
+import { broadcast } from '../../utils/websocket';
 
 type PopulatedOrder = TOrder & {
   listingId: TListing;
@@ -61,6 +62,12 @@ const createOrderIntoDB = async (payload: TOrder) => {
     if (!result) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create order');
     }
+
+    broadcast({
+      userId: payload.buyerId,
+      content:
+        'Your Order has been placed successfully. Please wait for the seller to accept your order. You will receive a notification when the seller accepts your order.',
+    });
 
     return result;
   } catch (err: any) {
@@ -170,6 +177,12 @@ const changeOrderStatusIntoDB = async (
       result?.orderId as string,
       result?.status,
     );
+
+    broadcast({
+      userId: user?.userId,
+      content: `Your order status has been changed from ${status.status} to ${result.status}. Please check your order status.`,
+    });
+
     if (info.accepted.length === 0) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Email not sent');
     }
@@ -198,6 +211,7 @@ const updateOrderIntoDB = async (orderId: string, payload: Partial<TOrder>) => {
     if (!result) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update order');
     }
+
     return result;
   } catch (err: any) {
     throw new Error(err);
@@ -362,6 +376,11 @@ const verifyPaymentFromDB = async (paymentId: string) => {
       if (!user) {
         throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
       }
+
+      broadcast({
+        userId: user?.userId,
+        content: `Your payment has been successful. Your payment id is ${orderExists?.transaction?.paymentId}. You will receive a confirmation email shortly.`,
+      });
 
       const info = await sendPaymentConfirmationEmail(
         user?.email,
