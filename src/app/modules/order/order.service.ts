@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import QueryBuilder from '../../builder/QueryBuilder';
 import OrderModel from './order.model';
 import { TOrder } from './order.interface';
@@ -298,7 +299,7 @@ const createPaymentIntoDB = async (orderId: string, client_ip: string) => {
 
     return updatedOrder;
   } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create payment');
+    throw new AppError(err, 'Failed to create payment');
   }
 };
 
