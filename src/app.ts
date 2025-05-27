@@ -11,6 +11,7 @@ import { ListingRoutes } from './app/modules/listing/listing.routes';
 import { OrderRoutes } from './app/modules/order/order.routes';
 import { ReviewRoutes } from './app/modules/review/review.routes';
 import { CategoryRoutes } from './app/modules/category/category.routes';
+import { StatisticsRoutes } from './app/modules/statistics/statistics.route';
 
 const app: Application = express();
 
@@ -37,6 +38,7 @@ app.use('/api/listings', ListingRoutes);
 app.use('/api/orders', OrderRoutes);
 app.use('/api/reviews', ReviewRoutes);
 app.use('/api/categories', CategoryRoutes);
+app.use('/api/statistics', StatisticsRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send(`
