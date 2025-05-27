@@ -23,11 +23,11 @@ const getStatisticsFromDB = async () => {
 
   // Total counts
   const totalUsers = await UserModel.countDocuments();
-  const totalActiveUsers = await UserModel.countDocuments({ status: 'active' });
+  const totalActiveUsers = await UserModel.countDocuments({ isActive: true });
   const totalProducts = await ListingModel.countDocuments({ isDeleted: false });
   const totalAvailableProducts = await ListingModel.countDocuments({
     isDeleted: false,
-    status: 'available',
+    isAvailable: true,
   });
 
   return {
