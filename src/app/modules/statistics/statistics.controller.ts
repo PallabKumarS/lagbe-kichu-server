@@ -15,6 +15,20 @@ const getStatistics = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDetailedStatistics = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await StatisticsService.getDetailedStatisticsFromDB();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Detailed statistics retrieved successfully',
+      data,
+    });
+  },
+);
+
 export const StatisticsController = {
   getStatistics,
+  getDetailedStatistics,
 };
