@@ -114,6 +114,12 @@ PATCH /api/orders/verify-payment/:paymentId - (Buyer) Verify payment
 DELETE /api/orders/:orderId - (Admin/Buyer) Delete order
 ```
 
+### Statistics
+
+```
+GET /api/statistics - Get statistics data
+```
+
 ## Live Server
 
 [Backend Live Link](https://pks-lagbe-kichu-server.vercel.app)
