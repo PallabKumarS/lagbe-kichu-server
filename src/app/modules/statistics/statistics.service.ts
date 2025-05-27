@@ -211,19 +211,21 @@ const getDetailedStatisticsFromDB = async () => {
     role: 'admin',
     isActive: true,
   });
+
   const activeSellers = await UserModel.countDocuments({
     role: 'seller',
-    isActive: { $ne: true },
+    isActive: { $ne: false },
   });
   const activeBuyers = await UserModel.countDocuments({
     role: 'buyer',
-    isActive: { $ne: true },
+    isActive: { $ne: false },
   });
 
   // Total counts
-  const totalUsers = await UserModel.countDocuments();
+  const totalUsers = await UserModel.countDocuments({});
+
   const totalActiveUsers = await UserModel.countDocuments({
-    isActive: { $ne: { $ne: true } },
+    isActive: { $ne: true },
   });
   const totalProducts = await ListingModel.countDocuments({ isDeleted: false });
   const totalAvailableProducts = await ListingModel.countDocuments({

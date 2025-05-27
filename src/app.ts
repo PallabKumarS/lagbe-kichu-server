@@ -27,6 +27,15 @@ app.use(
   }),
 );
 
+// app.use((req, res, next) => {
+//   console.log(`${req.method} ${req.path}`);
+//   console.log('Query params:', req.query);
+//   console.log('Body:', req.body);
+//   console.log('Headers:', req.headers);
+//   console.log('---');
+//   next();
+// });
+
 app.use(cookieParser());
 app.use(express.json());
 
